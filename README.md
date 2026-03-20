@@ -1,4 +1,4 @@
-# GigShield — AI-Powered Parametric Income Insurance for India's Gig Delivery Workers
+# SurelyAI — AI-Powered Parametric Income Insurance for India's Gig Delivery Workers
 
 **Guidewire DEVTrails 2026 | University Hackathon Submission**
 
@@ -6,32 +6,72 @@
 
 ## Table of Contents
 
-1. [Executive Summary](#1-executive-summary)
-2. [Problem Context and Market Reality](#2-problem-context-and-market-reality)
-3. [Our Persona and Scope](#3-our-persona-and-scope)
-4. [Solution Architecture Overview](#4-solution-architecture-overview)
-5. [Core Feature Breakdown](#5-core-feature-breakdown)
-   - 5.1 [Onboarding and Policy Setup](#51-onboarding-and-policy-setup)
-   - 5.2 [AI-Powered Weekly Risk Pricing](#52-ai-powered-weekly-risk-pricing)
-   - 5.3 [Parametric Trigger and Automated Claims](#53-parametric-trigger-and-automated-claims)
-   - 5.4 [Intelligent Fraud Detection](#54-intelligent-fraud-detection)
-   - 5.5 [Analytics Dashboard](#55-analytics-dashboard)
-6. [Adversarial Defense and Anti-Spoofing Strategy](#6-adversarial-defense-and-anti-spoofing-strategy)
-7. [Explainable AI (XAI) Layer](#7-explainable-ai-xai-layer)
-8. [Data Model](#8-data-model)
-9. [API Design and Integration Capabilities](#9-api-design-and-integration-capabilities)
-10. [Tech Stack and Infrastructure](#10-tech-stack-and-infrastructure)
-11. [Novelty and Differentiators](#11-novelty-and-differentiators)
-12. [Weekly Premium Model — Financial Logic](#12-weekly-premium-model--financial-logic)
-13. [Development Plan and Team Split](#13-development-plan-and-team-split)
-14. [Architecture and Flow Diagrams](#14-architecture-and-flow-diagrams)
-15. [Fraud Detection and Explainability Diagrams](#15-fraud-detection-and-explainability-diagrams)
+- [SurelyAI — AI-Powered Parametric Income Insurance for India's Gig Delivery Workers](#surelyai--ai-powered-parametric-income-insurance-for-indias-gig-delivery-workers)
+  - [Table of Contents](#table-of-contents)
+  - [1. Executive Summary](#1-executive-summary)
+  - [2. Problem Context and Market Reality](#2-problem-context-and-market-reality)
+  - [3. Our Persona and Scope](#3-our-persona-and-scope)
+    - [Primary Persona](#primary-persona)
+    - [Persona-Specific Disruption Parameters](#persona-specific-disruption-parameters)
+    - [What Is Covered](#what-is-covered)
+    - [What Is Explicitly Excluded](#what-is-explicitly-excluded)
+  - [4. Solution Architecture Overview](#4-solution-architecture-overview)
+    - [Key Architectural Decisions](#key-architectural-decisions)
+  - [5. Core Feature Breakdown](#5-core-feature-breakdown)
+    - [5.1 Onboarding and Policy Setup](#51-onboarding-and-policy-setup)
+    - [5.2 AI-Powered Weekly Risk Pricing](#52-ai-powered-weekly-risk-pricing)
+    - [5.3 Parametric Trigger and Automated Claims](#53-parametric-trigger-and-automated-claims)
+    - [5.4 Intelligent Fraud Detection](#54-intelligent-fraud-detection)
+    - [5.5 Analytics Dashboard](#55-analytics-dashboard)
+  - [6. Adversarial Defense and Anti-Spoofing Strategy](#6-adversarial-defense-and-anti-spoofing-strategy)
+    - [6.1 The Differentiation: Genuine Stranded Worker vs. Bad Actor](#61-the-differentiation-genuine-stranded-worker-vs-bad-actor)
+    - [6.2 The Data Points: Beyond Basic GPS](#62-the-data-points-beyond-basic-gps)
+    - [6.3 The UX Balance: Protecting Honest Workers](#63-the-ux-balance-protecting-honest-workers)
+  - [7. Explainable AI (XAI) Layer](#7-explainable-ai-xai-layer)
+    - [Why Explainability Matters Here](#why-explainability-matters-here)
+    - [How the XAI Layer Works](#how-the-xai-layer-works)
+  - [8. Data Model](#8-data-model)
+    - [Core Tables](#core-tables)
+  - [9. API Design and Integration Capabilities](#9-api-design-and-integration-capabilities)
+    - [Auth Endpoints](#auth-endpoints)
+    - [Worker Endpoints](#worker-endpoints)
+    - [Admin Endpoints](#admin-endpoints)
+    - [External Integrations](#external-integrations)
+  - [10. Tech Stack and Infrastructure](#10-tech-stack-and-infrastructure)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+    - [Database](#database)
+    - [Hosting (Optional but Configured)](#hosting-optional-but-configured)
+    - [Shared Contract](#shared-contract)
+  - [11. Novelty and Differentiators](#11-novelty-and-differentiators)
+    - [1. Multi-Category, Multi-Platform Income Reconciliation](#1-multi-category-multi-platform-income-reconciliation)
+    - [2. Coordinated Syndicate Detection (Zone Fraud Alerts)](#2-coordinated-syndicate-detection-zone-fraud-alerts)
+    - [3. Explainable AI as a Core Feature, Not an Add-on](#3-explainable-ai-as-a-core-feature-not-an-add-on)
+    - [4. Parametric Simulator for Admins](#4-parametric-simulator-for-admins)
+    - [5. Multi-Signal Fraud Defense](#5-multi-signal-fraud-defense)
+  - [12. Weekly Premium Model — Financial Logic](#12-weekly-premium-model--financial-logic)
+    - [Why Weekly?](#why-weekly)
+    - [Premium Calculation Example](#premium-calculation-example)
+    - [Loss Ratio Monitoring](#loss-ratio-monitoring)
+  - [13. Development Plan and Team Split](#13-development-plan-and-team-split)
+    - [Feature Branches](#feature-branches)
+    - [Contract-First Development](#contract-first-development)
+    - [Phase Timeline](#phase-timeline)
+    - [Smoke Test Sequence](#smoke-test-sequence)
+  - [14. Architecture and Flow Diagrams](#14-architecture-and-flow-diagrams)
+    - [14.1 System Component Architecture](#141-system-component-architecture)
+    - [14.2 Worker Onboarding Flow](#142-worker-onboarding-flow)
+    - [14.3 Parametric Trigger to Payout — Sequence](#143-parametric-trigger-to-payout--sequence)
+  - [15. Fraud Detection and Explainability Diagrams](#15-fraud-detection-and-explainability-diagrams)
+    - [15.1 Fraud Detection and Anti-Spoofing Pipeline](#151-fraud-detection-and-anti-spoofing-pipeline)
+    - [15.2 Explainable AI Layer — Premium Breakdown Flow](#152-explainable-ai-layer--premium-breakdown-flow)
+    - [15.3 End-to-End System Workflow (Overview)](#153-end-to-end-system-workflow-overview)
 
 ---
 
 ## 1. Executive Summary
 
-GigShield is an AI-enabled, parametric income insurance platform built specifically for platform-based delivery partners in India. It targets workers across food delivery (Swiggy, Zomato), grocery and quick commerce (Blinkit, Zepto, Instamart), and e-commerce logistics (Amazon, Flipkart) — covering all three sub-categories under a unified multi-category architecture, with the design intentionally structured to support multi-worker, multi-platform scaling from day one.
+SurelyAI is an AI-enabled, parametric income insurance platform built specifically for platform-based delivery partners in India. It targets workers across food delivery (Swiggy, Zomato), grocery and quick commerce (Blinkit, Zepto, Instamart), and e-commerce logistics (Amazon, Flipkart) — covering all three sub-categories under a unified multi-category architecture, with the design intentionally structured to support multi-worker, multi-platform scaling from day one.
 
 The platform protects gig workers from income loss caused strictly by external, measurable disruptions: extreme weather events, civic curfews, and local strikes. It does not cover health, accidents, or vehicle repairs. Coverage is structured on a weekly pricing cycle, matching the operational rhythm of gig workers.
 
@@ -60,7 +100,7 @@ Traditional insurance products are entirely inaccessible to this population: pre
 
 Parametric insurance is the right answer. Instead of measuring actual damage and then evaluating a subjective claim, a parametric product pays out automatically when a pre-agreed, objectively measurable condition is crossed — for example, rainfall above a threshold in the worker's zone during their shift. This model eliminates claim delay, adjuster costs, and the information asymmetry that makes traditional insurance fail for gig workers.
 
-GigShield brings parametric insurance to the gig economy with AI-powered pricing and fraud defense that makes the economics viable at scale.
+SurelyAI brings parametric insurance to the gig economy with AI-powered pricing and fraud defense that makes the economics viable at scale.
 
 ---
 
@@ -97,7 +137,7 @@ This is deliberately a multi-category persona. A single worker in practice often
 
 ## 4. Solution Architecture Overview
 
-GigShield is structured as a monolithic FastAPI backend with clear internal module separation, a React + Vite SPA frontend, and a PostgreSQL database hosted on Supabase or Railway. The architecture is designed to be understandable and demo-able within the hackathon scope while being structurally honest about what a production system would require.
+SurelyAI is structured as a monolithic FastAPI backend with clear internal module separation, a React + Vite SPA frontend, and a PostgreSQL database hosted on Supabase or Railway. The architecture is designed to be understandable and demo-able within the hackathon scope while being structurally honest about what a production system would require.
 
 ```
 +-------------------------------+
@@ -389,7 +429,7 @@ The critical challenge is that genuine workers in a real event must not be penal
 
 ## 7. Explainable AI (XAI) Layer
 
-One of our key architectural differentiators is that no AI decision in GigShield is a black box. Every output — premium amount, fraud score, claim approval — is accompanied by a human-readable explanation. This is not a cosmetic feature; it is load-bearing for trust, adoption, and regulatory credibility.
+One of our key architectural differentiators is that no AI decision in SurelyAI is a black box. Every output — premium amount, fraud score, claim approval — is accompanied by a human-readable explanation. This is not a cosmetic feature; it is load-bearing for trust, adoption, and regulatory credibility.
 
 ### Why Explainability Matters Here
 
@@ -558,7 +598,7 @@ The database schema is designed around the weekly insurance cycle. All tables us
 
 ### 1. Multi-Category, Multi-Platform Income Reconciliation
 
-Most insurance prototypes pick one persona and one platform. GigShield aggregates income across multiple platforms (food + grocery + e-commerce) for a single worker. This is not just a product feature — it changes the risk model, the fraud detection approach, and the coverage calculation in fundamental ways. A worker earning Rs. 5,000 across two platforms has a different risk profile and fraud signature than one earning Rs. 5,000 from a single platform, and our model captures this through the `platform_mix_risk` modifier.
+Most insurance prototypes pick one persona and one platform. SurelyAI aggregates income across multiple platforms (food + grocery + e-commerce) for a single worker. This is not just a product feature — it changes the risk model, the fraud detection approach, and the coverage calculation in fundamental ways. A worker earning Rs. 5,000 across two platforms has a different risk profile and fraud signature than one earning Rs. 5,000 from a single platform, and our model captures this through the `platform_mix_risk` modifier.
 
 ### 2. Coordinated Syndicate Detection (Zone Fraud Alerts)
 
@@ -665,7 +705,7 @@ and the end-to-end parametric trigger pipeline.
 
 ### 14.1 System Component Architecture
 
-![GigShield System Component Architecture](./diagrams/architecture.jpeg)
+![SurelyAI System Component Architecture](./diagrams/architecture.jpeg)
 
 *Figure 1: High-level component view showing the Frontend, Backend modules,
 PostgreSQL database, and external service integrations.*
@@ -689,7 +729,7 @@ activity generation, loss computation, fraud evaluation, and sandbox payout.*
 ## 15. Fraud Detection and Explainability Diagrams
 
 These diagrams focus specifically on the fraud pipeline and the Explainable AI
-layer — the two capabilities that distinguish GigShield from a basic parametric
+layer — the two capabilities that distinguish SurelyAI from a basic parametric
 insurance prototype.
 
 ### 15.1 Fraud Detection and Anti-Spoofing Pipeline
@@ -708,7 +748,7 @@ JSONB, and surfaced to the worker as a plain-language premium explanation.*
 
 ### 15.3 End-to-End System Workflow (Overview)
 
-![GigShield End-to-End Mermaid Workflow](./diagrams/workflow-overview.png)
+![SurelyAI End-to-End Mermaid Workflow](./diagrams/workflow-overview.png)
 
 *Figure 6: Cohesive colour-coded workflow spanning onboarding, weekly cycle
 pricing, parametric event triggering, fraud evaluation, and dashboard outputs
