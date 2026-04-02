@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SurelyAI | Worker Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#93000a",
+              "surface-container-highest": "#d5e3fc",
+              "primary-fixed-dim": "#abc9ef",
+              "outline": "#73777e",
+              "tertiary-container": "#00413b",
+              "secondary-fixed": "#b1f0ce",
+              "secondary": "#2c694e",
+              "primary-fixed": "#d1e4ff",
+              "inverse-primary": "#abc9ef",
+              "surface-dim": "#ccdbf3",
+              "outline-variant": "#c3c6ce",
+              "tertiary-fixed": "#89f5e7",
+              "on-tertiary-fixed-variant": "#005049",
+              "error-container": "#ffdad6",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#95d4b3",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#2a4968",
+              "on-error": "#ffffff",
+              "on-primary-fixed": "#001d35",
+              "on-background": "#0d1c2e",
+              "secondary-container": "#aeeecb",
+              "on-tertiary-container": "#42b4a7",
+              "on-surface": "#0d1c2e",
+              "tertiary": "#002925",
+              "on-secondary-container": "#316e52",
+              "inverse-surface": "#233144",
+              "on-tertiary-fixed": "#00201d",
+              "surface-container-high": "#dce9ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-bright": "#f8f9ff",
+              "primary-container": "#1b3b5a",
+              "inverse-on-surface": "#eaf1ff",
+              "on-tertiary": "#ffffff",
+              "on-primary-container": "#87a5ca",
+              "primary": "#002542",
+              "surface": "#f8f9ff",
+              "surface-tint": "#436182",
+              "surface-container": "#e6eeff",
+              "on-secondary-fixed": "#002114",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#43474d",
+              "tertiary-fixed-dim": "#6bd8cb",
+              "on-primary": "#ffffff",
+              "background": "#f8f9ff",
+              "on-secondary-fixed-variant": "#0e5138",
+              "surface-variant": "#d5e3fc"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .tabular { font-variant-numeric: tabular-nums; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- Top AppBar (JSON Mapping) -->
+<header class="bg-[#f8f9ff] dark:bg-[#0d1c2e] border-none shadow-none docked full-width top-0 sticky z-40">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high">
+<img alt="User Profile Worker" data-alt="Professional headshot of a delivery worker with a friendly expression, soft daylight studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCom-hK4JvLbo52CiJLdEXs1tlOf57AYHvB41GaFd4ythH6QCj5q0FgQViEF1sjBRfDTDblR5IPaxUbKvoIiclMiogS_XQ9sxQY7LF2HQbckZb4QAhMO7bGPEKAg9QpOrWw7grN-dGaN-ynpB67I1a5hjnjOmLiFKC-m8j3oBMZSlRhQd60xYYk5dEska6kHGxZtZVyuFCGokWnRuVjrnevkIVZJv3EjSh3NoTlt2aKDDKK9VNxYAvjF3ApTv31_AyugHl19ESqu_K7"/>
+</div>
+<h1 class="text-xl font-extrabold tracking-tighter text-[#002542] dark:text-[#dce9ff]">SurelyAI</h1>
+</div>
+<button class="material-symbols-outlined text-[#002542] dark:text-[#dce9ff] hover:bg-[#dce9ff]/50 transition-colors p-2 rounded-xl scale-95 active:scale-90" data-icon="settings">
+                settings
+            </button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 py-6 space-y-8">
+<!-- Header & Payout Bento Section -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Payout Estimate Card -->
+<div class="md:col-span-2 bg-gradient-to-br from-primary to-primary-container p-8 rounded-full shadow-lg text-white flex flex-col justify-between min-h-[220px]">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-on-primary-container font-label text-sm font-semibold tracking-wider uppercase">Weekly Payout Estimate</p>
+<h2 class="text-5xl font-bold mt-2 tabular tracking-tight">$1,240.00</h2>
+</div>
+<div class="bg-secondary px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="text-xs font-bold uppercase tracking-widest">Active Protection</span>
+</div>
+</div>
+<div class="flex gap-4 mt-8">
+<div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl flex-1">
+<p class="text-white/60 text-xs font-medium">Days Covered</p>
+<p class="text-lg font-bold">06/07</p>
+</div>
+<div class="bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl flex-1">
+<p class="text-white/60 text-xs font-medium">Next Payout</p>
+<p class="text-lg font-bold">Oct 24</p>
+</div>
+</div>
+</div>
+<!-- Platform Status Widget -->
+<div class="bg-surface-container-lowest p-6 rounded-full space-y-6">
+<h3 class="text-on-surface font-bold text-lg tracking-tight">Platform Status</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed-dim shadow-[0_0_8px_rgba(149,212,179,0.8)]"></div>
+<span class="font-medium text-sm">Swiggy</span>
+</div>
+<span class="text-xs text-secondary font-bold">Connected</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-secondary-fixed-dim shadow-[0_0_8px_rgba(149,212,179,0.8)]"></div>
+<span class="font-medium text-sm">Zomato</span>
+</div>
+<span class="text-xs text-secondary font-bold">Connected</span>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-error animate-pulse"></div>
+<span class="font-medium text-sm">Uber Eats</span>
+</div>
+<span class="text-xs text-error font-bold">Syncing...</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Risk Map & Protection Summary -->
+<section class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+<!-- Risk Map Widget -->
+<div class="lg:col-span-3 bg-surface-container-lowest rounded-full overflow-hidden flex flex-col">
+<div class="p-6 pb-2">
+<h3 class="text-on-surface font-bold text-lg">Risk Map</h3>
+<p class="text-on-surface-variant text-sm mt-1">Real-time environmental monitoring</p>
+</div>
+<div class="relative flex-grow min-h-[300px] m-4 rounded-xl overflow-hidden">
+<img class="w-full h-full object-cover grayscale opacity-40" data-alt="Modern satellite map view of a city with semi-transparent heat map overlays in blue and orange indicating weather risks" data-location="Bangalore" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARVR1CYS_75vZTRkciKvuKiBjf00A-9mDfownEa7RrYCDiVjX9vg_g-nS_NBvVkG8YWJdmBP5ODXqaQPUqNfJf_V3Nxkuy2o_ol7hlL_NcLjWr53B5Fh7SBIdie_nVHj1DjDPoMLYzJUr0Dug9S7SPIq_O19bHbyd_F_gQY5PA_B5T3eVoosdatmMJfjypARrSuz2UKqNOS-knQPxH4vbsixOghbagha0B9hC7fFOJIjJdnOoMThdAW5YbaR_WKLbS2kgbXUIvvCNk"/>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur shadow-sm p-4 rounded-xl max-w-xs border border-white/20">
+<div class="flex items-center gap-2 text-error mb-2">
+<span class="material-symbols-outlined text-base">rainy</span>
+<span class="text-xs font-bold uppercase">High Rain Risk</span>
+</div>
+<p class="text-on-surface font-bold text-sm leading-tight">North Bangalore (Yelahanka Zone)</p>
+<p class="text-on-surface-variant text-[11px] mt-1 italic">92% probability of payout trigger within 2 hours.</p>
+</div>
+<div class="absolute bottom-4 right-4">
+<div class="flex items-center gap-1 bg-tertiary-fixed-dim px-3 py-1 rounded-full shadow-sm">
+<div class="w-1.5 h-1.5 bg-tertiary rounded-full animate-ping"></div>
+<span class="text-[10px] font-bold text-tertiary uppercase tracking-tighter">AI Monitoring Active</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Weekly Protection Summary -->
+<div class="lg:col-span-2 flex flex-col gap-8">
+<div class="bg-surface-container-high p-8 rounded-full flex-grow">
+<h3 class="text-on-surface font-bold text-lg mb-6 tracking-tight">Weekly Protection</h3>
+<div class="space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-widest">Premiums Paid</p>
+<p class="text-2xl font-bold tabular mt-1">$42.50</p>
+</div>
+<div class="text-right">
+<p class="text-on-surface-variant text-xs font-medium uppercase tracking-widest">Trigger Pot.</p>
+<p class="text-2xl font-bold tabular mt-1 text-secondary">$850.00</p>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-full h-3 overflow-hidden">
+<div class="bg-secondary h-full" style="width: 65%;"></div>
+</div>
+<ul class="space-y-4 pt-2">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-medium">Excessive Rain (3 Triggers)</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-sm font-medium">Platform Outage Protection</span>
+</li>
+<li class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">radio_button_unchecked</span>
+<span class="text-sm font-medium">Strike Delay (No Triggers)</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Payouts List -->
+<section class="bg-surface-container-lowest p-8 rounded-full">
+<div class="flex justify-between items-center mb-8">
+<h3 class="text-on-surface font-bold text-xl">Recent Payouts</h3>
+<button class="text-primary font-bold text-sm hover:underline">View All History</button>
+</div>
+<div class="space-y-2">
+<!-- Payout Item 1 -->
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-low transition-colors rounded-xl group">
+<div class="flex items-center gap-6">
+<div class="bg-secondary-container p-3 rounded-full text-on-secondary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rainy</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Weather Surge Compensation</p>
+<p class="text-on-surface-variant text-xs">Oct 21, 2023 • North Bangalore Sector</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="bg-tertiary-container/10 px-3 py-1 rounded-full border border-tertiary-container/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container">auto_awesome</span>
+<span class="text-[10px] font-bold text-tertiary-container uppercase">Zero-Touch</span>
+</div>
+<p class="text-xl font-bold tabular text-on-surface">+$142.00</p>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-on-surface transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Payout Item 2 -->
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-low transition-colors rounded-xl group">
+<div class="flex items-center gap-6">
+<div class="bg-surface-container-highest p-3 rounded-full text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">electric_bolt</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Platform API Outage</p>
+<p class="text-on-surface-variant text-xs">Oct 19, 2023 • Swiggy Logistics</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="bg-tertiary-container/10 px-3 py-1 rounded-full border border-tertiary-container/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container">auto_awesome</span>
+<span class="text-[10px] font-bold text-tertiary-container uppercase">Zero-Touch</span>
+</div>
+<p class="text-xl font-bold tabular text-on-surface">+$88.50</p>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-on-surface transition-colors">chevron_right</span>
+</div>
+</div>
+<!-- Payout Item 3 -->
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-low transition-colors rounded-xl group">
+<div class="flex items-center gap-6">
+<div class="bg-secondary-container p-3 rounded-full text-on-secondary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">rainy</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Excessive Rain (Level 2)</p>
+<p class="text-on-surface-variant text-xs">Oct 18, 2023 • CBD Central</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="bg-tertiary-container/10 px-3 py-1 rounded-full border border-tertiary-container/20 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container">auto_awesome</span>
+<span class="text-[10px] font-bold text-tertiary-container uppercase">Zero-Touch</span>
+</div>
+<p class="text-xl font-bold tabular text-on-surface">+$210.00</p>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-on-surface transition-colors">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell (JSON Mapping) -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-safe pt-2 bg-white dark:bg-[#1b3b5a] z-50 rounded-t-2xl shadow-[0_-4px_20px_rgba(13,28,46,0.04)]">
+<!-- Active Item: Home -->
+<a class="flex flex-col items-center justify-center text-[#002542] dark:text-[#dce9ff] bg-[#dce9ff] dark:bg-[#002542] rounded-xl px-4 py-1.5 transition-all Active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums mt-0.5">Home</span>
+</a>
+<!-- Inactive: Claims -->
+<a class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all Active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="history_edu">history_edu</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums mt-0.5">Claims</span>
+</a>
+<!-- Inactive: Explain -->
+<a class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all Active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="psychology">psychology</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums mt-0.5">Explain</span>
+</a>
+<!-- Inactive: Alerts -->
+<a class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all Active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="notifications">notifications</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums mt-0.5">Alerts</span>
+</a>
+<!-- Inactive: Profile -->
+<a class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all Active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="account_circle">account_circle</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums mt-0.5">Profile</span>
+</a>
+</nav>
+</body></html>

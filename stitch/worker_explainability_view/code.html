@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SurelyAI | Explain Payouts</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error-container": "#93000a",
+              "surface-container-highest": "#d5e3fc",
+              "primary-fixed-dim": "#abc9ef",
+              "outline": "#73777e",
+              "tertiary-container": "#00413b",
+              "secondary-fixed": "#b1f0ce",
+              "secondary": "#2c694e",
+              "primary-fixed": "#d1e4ff",
+              "inverse-primary": "#abc9ef",
+              "surface-dim": "#ccdbf3",
+              "outline-variant": "#c3c6ce",
+              "tertiary-fixed": "#89f5e7",
+              "on-tertiary-fixed-variant": "#005049",
+              "error-container": "#ffdad6",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#95d4b3",
+              "error": "#ba1a1a",
+              "on-primary-fixed-variant": "#2a4968",
+              "on-error": "#ffffff",
+              "on-primary-fixed": "#001d35",
+              "on-background": "#0d1c2e",
+              "secondary-container": "#aeeecb",
+              "on-tertiary-container": "#42b4a7",
+              "on-surface": "#0d1c2e",
+              "tertiary": "#002925",
+              "on-secondary-container": "#316e52",
+              "inverse-surface": "#233144",
+              "on-tertiary-fixed": "#00201d",
+              "surface-container-high": "#dce9ff",
+              "surface-container-lowest": "#ffffff",
+              "surface-bright": "#f8f9ff",
+              "primary-container": "#1b3b5a",
+              "inverse-on-surface": "#eaf1ff",
+              "on-tertiary": "#ffffff",
+              "on-primary-container": "#87a5ca",
+              "primary": "#002542",
+              "surface": "#f8f9ff",
+              "surface-tint": "#436182",
+              "surface-container": "#e6eeff",
+              "on-secondary-fixed": "#002114",
+              "on-secondary": "#ffffff",
+              "on-surface-variant": "#43474d",
+              "tertiary-fixed-dim": "#6bd8cb",
+              "on-primary": "#ffffff",
+              "background": "#f8f9ff",
+              "on-secondary-fixed-variant": "#0e5138",
+              "surface-variant": "#d5e3fc"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="bg-[#f8f9ff] dark:bg-[#0d1c2e] border-none shadow-none docked full-width top-0 sticky z-40">
+<div class="flex justify-between items-center px-6 py-4 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden">
+<img alt="User Profile Worker" data-alt="Close-up portrait of a professional worker with a friendly expression in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhbl7ILMxE3Yu0EtJmY7N6vXBQ0EeEiYWHlO8QQrvs2QGEsm1nu-sMBhRvH9nWbiPJwoGi2RGeAvxA2SbqIYPuXmSkYcnXFsgzrz_EwSKBaA_MOVUFyoPmKwxNmD3uuZsGzycfu9cub6Hmiq8qi2jdR1psG65hd2cIpIKO6d6NpB5mIynHg2QjbtBWemXLRvJcNBSWv2mQtl1yDqsKcAr7Bqkbpk3y-WEaU30FeUWBhhy4S_JZWF_XseUSjtDFuzKhtt6OBig9elsM"/>
+</div>
+<h1 class="text-xl font-extrabold tracking-tighter text-[#002542] dark:text-[#dce9ff] font-headline">SurelyAI</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#44474e] dark:text-[#c3c6ce] hover:bg-[#dce9ff]/50 transition-colors px-3 py-2 rounded-lg font-medium" href="#">Home</a>
+<a class="text-[#44474e] dark:text-[#c3c6ce] hover:bg-[#dce9ff]/50 transition-colors px-3 py-2 rounded-lg font-medium" href="#">Claims</a>
+<a class="text-[#002542] dark:text-[#dce9ff] font-bold px-3 py-2 rounded-lg bg-surface-container-low" href="#">Explain</a>
+<a class="text-[#44474e] dark:text-[#c3c6ce] hover:bg-[#dce9ff]/50 transition-colors px-3 py-2 rounded-lg font-medium" href="#">Alerts</a>
+</nav>
+<button class="material-symbols-outlined text-[#002542] dark:text-[#dce9ff] p-2 hover:bg-[#dce9ff]/50 transition-colors rounded-full" data-icon="settings">settings</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-8 pb-32">
+<!-- Hero Section: Parametric Transparency -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<span class="text-secondary font-bold tracking-widest text-[10px] uppercase mb-2 block font-label">Parametric Analysis</span>
+<h2 class="text-4xl md:text-5xl font-extrabold tracking-tight font-headline text-primary mb-4">Payout Architecture</h2>
+<p class="text-on-surface-variant max-w-xl text-lg leading-relaxed">
+                        We use real-time environmental data to trigger payouts instantly. No manual forms, no disputes—just pure data-driven fairness.
+                    </p>
+</div>
+<div class="bg-tertiary-container text-on-tertiary-container px-4 py-2 rounded-full flex items-center gap-2 self-start md:self-auto">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed-dim"></span>
+</span>
+<span class="text-xs font-bold font-label tracking-tight">LIVE MONITORING ACTIVE</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Dynamic Risk Pricing Card -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-full p-8 flex flex-col justify-between min-h-[400px]">
+<div>
+<h3 class="text-2xl font-bold font-headline text-primary mb-2">How your premium is calculated</h3>
+<p class="text-on-surface-variant mb-8">Dynamic risk pricing for <span class="font-bold text-primary">Bangalore North Zone</span></p>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+<div class="space-y-2">
+<span class="text-xs font-bold text-outline uppercase tracking-wider font-label">Historical Precipitation</span>
+<div class="text-3xl font-bold tabular-nums text-primary">12.4% <span class="text-sm font-normal text-on-surface-variant">risk wt.</span></div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[12.4%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<span class="text-xs font-bold text-outline uppercase tracking-wider font-label">Strike Frequency</span>
+<div class="text-3xl font-bold tabular-nums text-primary">4.2% <span class="text-sm font-normal text-on-surface-variant">risk wt.</span></div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[4.2%]"></div>
+</div>
+</div>
+<div class="space-y-2">
+<span class="text-xs font-bold text-outline uppercase tracking-wider font-label">Worker Density</span>
+<div class="text-3xl font-bold tabular-nums text-primary">High <span class="text-sm font-normal text-on-surface-variant">adj. factor</span></div>
+<div class="h-1.5 w-full bg-surface-container-low rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-8 pt-8 border-t border-outline-variant/15 flex flex-wrap gap-4 items-center">
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded-lg">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="database">database</span>
+<span class="text-xs font-medium font-label">IMD Weather Data</span>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-high rounded-lg">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="lan">lan</span>
+<span class="text-xs font-medium font-label">Blockchain Ledger Verified</span>
+</div>
+</div>
+</div>
+<!-- AQI Trigger Gauge Card -->
+<div class="md:col-span-4 bg-primary text-on-primary rounded-full p-8 flex flex-col items-center justify-center text-center">
+<span class="text-[10px] font-bold tracking-[0.2em] uppercase mb-6 opacity-70">Trigger Threshold</span>
+<div class="relative w-48 h-48 mb-6 flex items-center justify-center">
+<!-- Gauge SVG -->
+<svg class="w-full h-full -rotate-90" viewbox="0 0 100 100">
+<circle class="opacity-10" cx="50" cy="50" fill="none" r="45" stroke="currentColor" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="45" stroke="#6bd8cb" stroke-dasharray="282.7" stroke-dashoffset="70" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-4xl font-extrabold tabular-nums tracking-tighter">242</span>
+<span class="text-[10px] font-bold opacity-70">AQI LEVEL</span>
+</div>
+</div>
+<div class="bg-tertiary-fixed-dim text-on-tertiary-fixed font-bold px-4 py-1.5 rounded-full text-xs mb-4">
+                    THRESHOLD HIT
+                </div>
+<p class="text-sm opacity-80 leading-relaxed font-label px-4">
+                    Automatic payout triggered when AQI remained &gt;200 for 4 consecutive hours in BLR North.
+                </p>
+</div>
+<!-- Why This Payout Happened: Visual Breakdown -->
+<div class="md:col-span-12 bg-surface-container-high rounded-full p-10 overflow-hidden relative">
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
+<div>
+<h3 class="text-3xl font-extrabold font-headline text-primary mb-6">Why this payout happened</h3>
+<div class="space-y-6">
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="event_available">event_available</span>
+</div>
+<div>
+<h4 class="font-bold text-primary">Parametric Trigger Event</h4>
+<p class="text-on-surface-variant text-sm">Extreme heat detected (42°C+) between 11:00 and 15:00 on June 14th.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="person_search">person_search</span>
+</div>
+<div>
+<h4 class="font-bold text-primary">Worker Income Profile</h4>
+<p class="text-on-surface-variant text-sm">Calculated daily average: ₹840. Coverage covers 80% of lost potential.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex-shrink-0 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-secondary" data-icon="verified">verified</span>
+</div>
+<div>
+<h4 class="font-bold text-secondary">Decision: Approved</h4>
+<p class="text-on-surface-variant text-sm">Mismatch in expected daily activity vs climate data confirms loss.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-8 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-8">
+<span class="font-bold font-headline">Payout Ledger</span>
+<span class="text-secondary font-bold text-sm">#TXN-99201</span>
+</div>
+<div class="space-y-4 font-label">
+<div class="flex justify-between text-sm py-2 border-b border-surface-container">
+<span class="text-on-surface-variant">Base Protection</span>
+<span class="font-bold tabular-nums">₹500.00</span>
+</div>
+<div class="flex justify-between text-sm py-2 border-b border-surface-container">
+<span class="text-on-surface-variant">Zone Multiplier (1.2x)</span>
+<span class="font-bold tabular-nums">+₹100.00</span>
+</div>
+<div class="flex justify-between text-sm py-2 border-b border-surface-container">
+<span class="text-on-surface-variant">Severity Bonus</span>
+<span class="font-bold tabular-nums">+₹72.00</span>
+</div>
+<div class="flex justify-between text-xl font-bold pt-4 text-primary font-headline">
+<span>Total Payout</span>
+<span class="tabular-nums">₹672.00</span>
+</div>
+</div>
+<div class="mt-8 bg-surface-container-low p-4 rounded-xl text-center">
+<span class="text-xs font-bold text-primary">No manual claim required. Data-driven fairness.</span>
+</div>
+</div>
+</div>
+<!-- Subtle background visual -->
+<div class="absolute top-0 right-0 w-1/3 h-full opacity-5 pointer-events-none">
+<img alt="Abstract Network Data" class="w-full h-full object-cover" data-alt="Abstract network of glowing blue data points and connections representing digital intelligence and parametric tracking" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3GF5dK7vzmU_vd5AFSr9lYpG-oR3MrS9STNWYgJ4xzm6qKqTZVSnf4AqO1KUhDywWTiCl3GKmlHmopBsNjbfYsuBsg_WUVdGwsIOvoI5A6OQUQM7M-iWk2LvJ7-gi2Sd9Cb0W-MG5CI3S0n4f21IQj9BXSiBHFb1XGP3IY_IpU0ZR_3iHUS25vKMVl1Gxdo_dptb5hzoPdqtHQQYQ6_bSR1pb0z0qRudMro2DhwTBBAK7pJAFSNsLOF1CyrW68IOEATE1FML6-6VT"/>
+</div>
+</div>
+<!-- Trust Callout Card -->
+<div class="md:col-span-12 bg-secondary text-on-secondary rounded-full p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-6">
+<div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl" data-icon="policy" style="font-variation-settings: 'FILL' 1;">policy</span>
+</div>
+<div>
+<h4 class="text-xl font-bold font-headline">SurelyAI Guarantee</h4>
+<p class="opacity-80 text-sm">All datasets are immutable and publicly auditable. We don't decide; the data does.</p>
+</div>
+</div>
+<button class="bg-white text-secondary font-bold px-8 py-3 rounded-xl hover:scale-95 transition-transform active:scale-90">
+                    Audit Data Sources
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-safe pt-2 bg-white dark:bg-[#1b3b5a] z-50 rounded-t-2xl shadow-[0_-4px_20px_rgba(13,28,46,0.04)] dark:shadow-none">
+<div class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums">Claims</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#002542] dark:text-[#dce9ff] bg-[#dce9ff] dark:bg-[#002542] rounded-xl px-4 py-1.5 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums">Explain</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums">Alerts</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#44474e] dark:text-[#c3c6ce] py-1.5 hover:text-[#002542] dark:hover:text-white transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-['Inter'] text-[11px] font-medium tabular-nums">Profile</span>
+</div>
+</nav>
+</body></html>

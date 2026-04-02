@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d5e3fc",
+                        "primary-fixed-dim": "#abc9ef",
+                        "outline": "#73777e",
+                        "tertiary-container": "#00413b",
+                        "secondary-fixed": "#b1f0ce",
+                        "secondary": "#2c694e",
+                        "primary-fixed": "#d1e4ff",
+                        "inverse-primary": "#abc9ef",
+                        "surface-dim": "#ccdbf3",
+                        "outline-variant": "#c3c6ce",
+                        "tertiary-fixed": "#89f5e7",
+                        "on-tertiary-fixed-variant": "#005049",
+                        "error-container": "#ffdad6",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#95d4b3",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#2a4968",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed": "#001d35",
+                        "on-background": "#0d1c2e",
+                        "secondary-container": "#aeeecb",
+                        "on-tertiary-container": "#42b4a7",
+                        "on-surface": "#0d1c2e",
+                        "tertiary": "#002925",
+                        "on-secondary-container": "#316e52",
+                        "inverse-surface": "#233144",
+                        "on-tertiary-fixed": "#00201d",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-bright": "#f8f9ff",
+                        "primary-container": "#1b3b5a",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#87a5ca",
+                        "primary": "#002542",
+                        "surface": "#f8f9ff",
+                        "surface-tint": "#436182",
+                        "surface-container": "#e6eeff",
+                        "on-secondary-fixed": "#002114",
+                        "on-secondary": "#ffffff",
+                        "on-surface-variant": "#43474d",
+                        "tertiary-fixed-dim": "#6bd8cb",
+                        "on-primary": "#ffffff",
+                        "background": "#f8f9ff",
+                        "on-secondary-fixed-variant": "#0e5138",
+                        "surface-variant": "#d5e3fc"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+        .tabular { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- NavigationDrawer (JSON Authority) -->
+<aside class="h-full w-64 fixed left-0 top-0 bg-[#dce9ff] flex flex-col py-8 space-y-2 z-50">
+<div class="font-black text-xl tracking-tighter text-[#002542] p-8">SURELY ADMIN</div>
+<nav class="flex-grow">
+<a class="bg-white text-[#002542] font-bold rounded-l-full ml-4 pl-6 py-4 flex items-center gap-3" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="text-slate-600 pl-10 py-4 flex items-center gap-3 hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined">security_update_good</span>
+<span>Claims</span>
+</a>
+<a class="text-slate-600 pl-10 py-4 flex items-center gap-3 hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined">gpp_maybe</span>
+<span>Fraud Alerts</span>
+</a>
+<a class="text-slate-600 pl-10 py-4 flex items-center gap-3 hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined">model_training</span>
+<span>Simulator</span>
+</a>
+<a class="text-slate-600 pl-10 py-4 flex items-center gap-3 hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Metrics</span>
+</a>
+<a class="text-slate-600 pl-10 py-4 flex items-center gap-3 hover:bg-white/50 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen">
+<!-- TopAppBar (JSON Authority - Medium Type) -->
+<header class="flex justify-between items-center px-8 py-4 w-full bg-white shadow-sm sticky top-0 z-40">
+<div class="flex flex-col">
+<span class="font-['Inter'] tabular-nums font-medium text-sm text-[#2c694e]">System Operational • Admin Mode</span>
+<h1 class="font-['Manrope'] font-bold text-[#002542]">Global Oversight Dashboard</h1>
+</div>
+<button class="hover:bg-slate-100 px-4 py-2 rounded-md transition-transform hover:translate-y-[-1px] text-[#002542] font-medium text-sm border border-outline-variant/15">
+                Switch Persona
+            </button>
+</header>
+<div class="p-8 space-y-8">
+<!-- KPI Cards Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] border-b-2 border-primary">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-medium text-xs uppercase tracking-widest">Total Active Policies</span>
+<span class="material-symbols-outlined text-primary/40">policy</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h2 class="text-3xl font-extrabold text-primary tabular tracking-tight">1.24M</h2>
+<span class="text-secondary text-xs font-bold">+2.4%</span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-medium text-xs uppercase tracking-widest">Total Payouts Today</span>
+<span class="material-symbols-outlined text-secondary/40">payments</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h2 class="text-3xl font-extrabold text-primary tabular tracking-tight">$842.2k</h2>
+<div class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></div>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] border-b-2 border-error">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-medium text-xs uppercase tracking-widest">Fraud Alert Rate</span>
+<span class="material-symbols-outlined text-error/40">gpp_maybe</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h2 class="text-3xl font-extrabold text-primary tabular tracking-tight">0.82%</h2>
+<span class="text-error text-xs font-bold">+0.1%</span>
+</div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<span class="text-on-surface-variant font-medium text-xs uppercase tracking-widest">Avg. Loss Ratio</span>
+<span class="material-symbols-outlined text-primary/40">query_stats</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h2 class="text-3xl font-extrabold text-primary tabular tracking-tight">64.5%</h2>
+<span class="text-secondary text-xs font-bold">Optimal</span>
+</div>
+</div>
+</section>
+<!-- Main Operational Grid (Bento Style) -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Live Risk Map (8 Cols) -->
+<section class="col-span-12 lg:col-span-8 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">map</span>
+                            Live Risk Map
+                        </h3>
+<div class="flex gap-2">
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-primary tracking-tighter">NORTH AMERICA</span>
+<span class="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-primary tracking-tighter">REAL-TIME FEED</span>
+</div>
+</div>
+<div class="relative h-[400px] w-full rounded-2xl overflow-hidden bg-surface-container shadow-inner">
+<img class="w-full h-full object-cover opacity-80" data-alt="Detailed dark satellite map of New York City area with glowing heat map overlays showing disruption zones in deep blue and red" data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmjvNdl4YFb5Or1pw2cw1GAN_Hb1-weTc9xgv4vYwQgBBnhZJcOO45tSR7NfENRg26GacD12eLR90dFB2dGF0zUcj2XfnobPdEMDPudtzqx8gTOjIaOO0i3T4qrfpEGEqYQ46t4gSO-1ivIIp-KtxcbPpDK9ZS6GLjvBGrqO8xfiQ9ORKBYNGMj6litRVWOc11YMrNXlNB31M-egj1llqGC27uBJTp5cMO-IIC9nwf_dwsDsaNinA4vChFt3Qy0UzjtCY70zz-wFp7"/>
+<!-- Floating Risk Overlay -->
+<div class="absolute top-4 right-4 bg-surface-container-lowest/90 backdrop-blur-md p-4 rounded-xl border border-outline-variant/15 w-64 space-y-3">
+<p class="text-[10px] font-black uppercase text-primary-container">Active Disruption Zones</p>
+<div class="space-y-2">
+<div class="flex justify-between items-center">
+<span class="text-xs font-medium">Zone 7A (Storm Front)</span>
+<span class="w-2 h-2 rounded-full bg-error"></span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-error h-full w-[85%]"></div>
+</div>
+<div class="flex justify-between items-center pt-1">
+<span class="text-xs font-medium">Zone 12 (Strike Action)</span>
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+</div>
+<div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div class="bg-amber-500 h-full w-[40%]"></div>
+</div>
+</div>
+</div>
+<!-- Pulse points on map -->
+<div class="absolute top-1/2 left-1/3 w-4 h-4 bg-error/40 rounded-full animate-ping"></div>
+<div class="absolute top-1/2 left-1/3 w-2 h-2 bg-error rounded-full"></div>
+<div class="absolute bottom-1/4 right-1/4 w-4 h-4 bg-amber-500/40 rounded-full animate-ping"></div>
+<div class="absolute bottom-1/4 right-1/4 w-2 h-2 bg-amber-500 rounded-full"></div>
+</div>
+</section>
+<!-- Fraud Insights (4 Cols) -->
+<section class="col-span-12 lg:col-span-4 space-y-4">
+<h3 class="text-xl font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">insights</span>
+                        Fraud Insights
+                    </h3>
+<div class="bg-surface-container-high rounded-2xl p-6 h-[400px] flex flex-col justify-between">
+<div class="space-y-4">
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                                AI has detected a <span class="font-bold text-primary">high-density cluster</span> of claims originating from localized IP ranges in Zone 4C. 
+                            </p>
+<div class="p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-2">
+<span class="text-xs font-bold text-error">Anomalous Spike</span>
+<span class="text-[10px] font-medium text-slate-500 tabular">14:22 UTC</span>
+</div>
+<div class="text-2xl font-black text-primary">+142%</div>
+<p class="text-[10px] text-on-surface-variant mt-1">Claim volume vs Historical Baseline</p>
+</div>
+</div>
+<div class="space-y-3">
+<h4 class="text-[10px] font-black uppercase text-primary/60">Suspicious Clusters</h4>
+<div class="flex flex-wrap gap-2">
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold">IP-MASQUERADING</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold">VELOCITY-CLAIM</span>
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-bold">ZONE-HACKING</span>
+</div>
+<button class="w-full bg-primary text-white py-3 rounded-lg font-bold text-sm mt-4 hover:opacity-90 transition-opacity">
+                                Launch Full Investigation
+                            </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Recent Claims Queue (Standard Pattern Rejected - Using Interactive Ledger Style) -->
+<section class="space-y-6">
+<div class="flex items-center justify-between">
+<h3 class="text-xl font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">pending_actions</span>
+                        Recent Claims Queue
+                    </h3>
+<span class="text-xs font-medium text-on-surface-variant italic">Showing 12 of 145 pending verification</span>
+</div>
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 text-[10px] font-black uppercase text-primary/60">Policy Holder</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase text-primary/60">Claim ID</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase text-primary/60">Incident Type</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase text-primary/60">Amount</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase text-primary/60">Verification Score</th>
+<th class="px-6 py-4 text-[10px] font-black uppercase text-primary/60">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container">
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Close-up professional portrait of a business executive man with a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGNfEUX_YwOklQaoxRxl9lpye2_ddxe92VT4wfVmCHxd2f33fpQe8PYW0HjQu3LHHMOwKVme4tZfGhjEdNMh6HEXOuoc1q3XjKZIh3hVwH_tSQJGXoqdFhqIWbZA2T-MCp-IWcXc5VXxbkHBMczKbqPdu9hyWw4pV48VD2qqMbrD9JPxCpzqwCczRiP9R64Ubm1usv9cJ2KGFYh6DL7GVFdBpEX45LGTRdJ0kdKc_V79-qKD_P4qUNPwlUFVGC51EesoFKkgOIhIEF"/>
+</div>
+<div>
+<div class="text-sm font-bold text-primary">Marcus Thorne</div>
+<div class="text-[10px] text-slate-500">Tier: Platinum Executive</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">#CLM-882-991</td>
+<td class="px-6 py-4">
+<span class="text-xs font-medium text-primary">Flight Delay (4h+)</span>
+</td>
+<td class="px-6 py-4 tabular font-bold text-primary">$1,250.00</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex-grow bg-surface-container h-1.5 rounded-full overflow-hidden w-24">
+<div class="bg-secondary h-full w-[94%]"></div>
+</div>
+<span class="text-[10px] font-black text-secondary">94%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-xs font-bold text-primary hover:underline">Review</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional profile photo of a young woman with creative styling and soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgjBkRD2kruVU5dgsINgHVUXubnIST3QAHvuAYMxE9fXi-OvIJZoruMYA4Dm_gA4MQh9xFOuk40MmcinEih45boHOZ_0E87Zt4FuN75u8ef9KOiD5xhIPzISJ-hcXI7Ry6gwik9-Bf8CQGI62ad2oF-2gvRac6AXDRYOTUrXY4ASHskkueSJrltEJjGnBwKxUiR0jCgPXp2Ndpfm0wgmsq49rYMBlHdoFJj6PwZh01RVMIJ-rCDS-RujRI5qVi4iywSfUPDKb367al"/>
+</div>
+<div>
+<div class="text-sm font-bold text-primary">Elena Rodriguez</div>
+<div class="text-[10px] text-slate-500">Tier: Standard Plus</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">#CLM-901-442</td>
+<td class="px-6 py-4">
+<span class="text-xs font-medium text-primary">Baggage Loss</span>
+</td>
+<td class="px-6 py-4 tabular font-bold text-primary">$3,400.00</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex-grow bg-surface-container h-1.5 rounded-full overflow-hidden w-24">
+<div class="bg-amber-500 h-full w-[62%]"></div>
+</div>
+<span class="text-[10px] font-black text-amber-600">62%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-xs font-bold text-error hover:underline">Flag Risk</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-bright transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Mid-shot of a middle-aged male professional in a modern office environment with blurred city background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvTJc4D5HPJ0MPtzJUCn_MgE0iWFFE0thqB4hSKqy5H6X9i6EW51pXr0n6g27f6XVV0grRxOQbCuiUOQeZzjMxaP2kLvRtgjQCUPAc5_nInkaUqLsEab4-n8NlYRp0L-9bcmLKQPmxCoOKv7SnVDo4vmmLsZvcqlEy2AhrmYO6GxPZSnSLG7Jskc_J5orCw84HgcP5Kva1AOmqsXozWquatAXatLXdanTwBQ3SZmJHPgj2STYu12HkXeWYKrXYPdlU6HERsqUdv5jK"/>
+</div>
+<div>
+<div class="text-sm font-bold text-primary">David Chen</div>
+<div class="text-[10px] text-slate-500">Tier: Global Voyager</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono text-slate-500">#CLM-776-012</td>
+<td class="px-6 py-4">
+<span class="text-xs font-medium text-primary">Personal Injury</span>
+</td>
+<td class="px-6 py-4 tabular font-bold text-primary">$12,800.00</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex-grow bg-surface-container h-1.5 rounded-full overflow-hidden w-24">
+<div class="bg-secondary h-full w-[88%]"></div>
+</div>
+<span class="text-[10px] font-black text-secondary">88%</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<button class="text-xs font-bold text-primary hover:underline">Review</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Footer / System Status -->
+<footer class="px-8 py-6 flex justify-between items-center text-[10px] text-slate-500 uppercase font-black tracking-widest border-t border-surface-container">
+<div class="flex items-center gap-4">
+<span>© 2024 SurelyAI Technologies</span>
+<span class="w-1 h-1 bg-slate-400 rounded-full"></span>
+<span class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                    Engine: V4.2-Luminous
+                </span>
+</div>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">API Status</a>
+<a class="hover:text-primary" href="#">Incident Logs</a>
+<a class="hover:text-primary" href="#">Node Clusters</a>
+</div>
+</footer>
+</main>
+<!-- FAB for AI Action (Contextual) -->
+<button class="fixed bottom-8 right-8 bg-primary text-white p-4 rounded-full shadow-xl hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology</span>
+</button>
+</body></html>
