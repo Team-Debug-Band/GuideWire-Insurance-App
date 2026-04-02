@@ -14,6 +14,7 @@ interface UserProfile {
   connectedPlatforms: string[];
   location?: { latitude: number; longitude: number };
   problems?: string[];
+  role?: 'USER' | 'ADMIN';
 }
 
 interface Claim {
@@ -69,8 +70,9 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   const mockLogin = (email: string) => {
+    const isAdmin = email.includes('admin');
     const mockUser = {
-      uid: 'mock-user-123',
+      uid: isAdmin ? 'mock-admin-123' : 'mock-user-123',
       email: email,
       displayName: email.split('@')[0],
       photoURL: null, // Use UI default silhouette
@@ -78,13 +80,14 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setUser(mockUser);
     setIsAuthReady(true);
     setProfile({
-      uid: 'mock-user-123',
+      uid: isAdmin ? 'mock-admin-123' : 'mock-user-123',
       fullName: email.split('@')[0],
       city: 'Bangalore',
       zone: 'Central',
       workPersona: 'FOOD',
       createdAt: new Date(),
       connectedPlatforms: [],
+      role: isAdmin ? 'ADMIN' : 'USER',
     });
     setPayouts([
       { id: 'p1', uid: 'mock-user-123', amount: 12.50, eventType: 'Extreme Rainfall', timestamp: new Date(), status: 'completed' },
