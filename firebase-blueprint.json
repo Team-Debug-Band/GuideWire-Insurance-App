@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile information for gig workers.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user's unique ID from Firebase Auth." },
+        "fullName": { "type": "string", "description": "The user's full name." },
+        "city": { "type": "string", "description": "The city where the user works." },
+        "zone": { "type": "string", "description": "The specific zone within the city." },
+        "workPersona": { "type": "string", "enum": ["FOOD", "GROCERY", "E-COMM"], "description": "The type of gig work." },
+        "phoneNumber": { "type": "string", "description": "The user's phone number." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the profile was created." }
+      },
+      "required": ["uid", "fullName", "city", "zone", "workPersona"]
+    },
+    "Payout": {
+      "title": "Payout",
+      "description": "A parametric payout triggered by an event.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user ID receiving the payout." },
+        "amount": { "type": "number", "description": "The payout amount." },
+        "eventType": { "type": "string", "description": "The type of event (e.g., 'Rain', 'Outage')." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the payout was triggered." },
+        "status": { "type": "string", "enum": ["pending", "completed"], "description": "The status of the payout." }
+      },
+      "required": ["uid", "amount", "eventType", "timestamp", "status"]
+    },
+    "SystemEvent": {
+      "title": "SystemEvent",
+      "description": "A global or regional event that could trigger payouts.",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "description": "The type of event (e.g., 'Rain', 'Outage')." },
+        "region": { "type": "string", "description": "The region affected." },
+        "intensity": { "type": "string", "description": "The intensity or threshold reached." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the event occurred." },
+        "active": { "type": "boolean", "description": "Whether the event is currently active." }
+      },
+      "required": ["type", "region", "timestamp", "active"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "Stores user profile data."
+    },
+    "/payouts/{payoutId}": {
+      "schema": "Payout",
+      "description": "Stores payout records for users."
+    },
+    "/system_events/{eventId}": {
+      "schema": "SystemEvent",
+      "description": "Stores real-time system events."
+    }
+  }
+}

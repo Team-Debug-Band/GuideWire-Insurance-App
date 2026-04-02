@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SurelyAI - Link Your Apps</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary-container": "#316e52",
+                        "primary-fixed-dim": "#abc9ef",
+                        "secondary-fixed": "#b1f0ce",
+                        "on-surface-variant": "#43474d",
+                        "primary": "#002542",
+                        "surface-container-high": "#dce9ff",
+                        "secondary": "#2c694e",
+                        "tertiary": "#002925",
+                        "surface": "#f8f9ff",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#0d1c2e",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#00201d",
+                        "tertiary-container": "#00413b",
+                        "outline-variant": "#c3c6ce",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed-variant": "#0e5138",
+                        "surface-tint": "#436182",
+                        "background": "#f8f9ff",
+                        "secondary-container": "#aeeecb",
+                        "tertiary-fixed-dim": "#6bd8cb",
+                        "on-primary-fixed": "#001d35",
+                        "on-tertiary-fixed-variant": "#005049",
+                        "surface-container": "#e6eeff",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-container": "#42b4a7",
+                        "surface-dim": "#ccdbf3",
+                        "primary-container": "#1b3b5a",
+                        "inverse-surface": "#233144",
+                        "inverse-primary": "#abc9ef",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#2a4968",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#89f5e7",
+                        "on-primary-container": "#87a5ca",
+                        "secondary-fixed-dim": "#95d4b3",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d5e3fc",
+                        "on-surface": "#0d1c2e",
+                        "on-secondary-fixed": "#002114",
+                        "surface-variant": "#d5e3fc",
+                        "primary-fixed": "#d1e4ff",
+                        "outline": "#73777e",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9ff;
+            color: #0d1c2e;
+        }
+        .premium-gradient {
+            background: linear-gradient(135deg, #002542 0%, #1b3b5a 100%);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface flex flex-col min-h-screen">
+<!-- Top Navigation Suppression: Not rendered for onboarding -->
+<main class="flex-grow flex flex-col px-6 pt-12 pb-24 max-w-lg mx-auto w-full">
+<!-- Header Section -->
+<header class="mb-10">
+<div class="flex items-center gap-2 mb-6">
+<div class="h-1.5 w-12 rounded-full bg-secondary"></div>
+<div class="h-1.5 w-12 rounded-full bg-secondary"></div>
+<div class="h-1.5 w-12 rounded-full bg-secondary"></div>
+<div class="h-1.5 w-12 rounded-full bg-surface-container-highest"></div>
+</div>
+<h1 class="font-headline font-extrabold text-3xl tracking-tight text-primary mb-3">
+                Link your apps.
+            </h1>
+<p class="font-body text-on-surface-variant leading-relaxed">
+                Linking your apps allows us to automatically detect income loss and payout claims.
+            </p>
+</header>
+<!-- Trust Indicator -->
+<div class="bg-surface-container-low p-4 rounded-xl flex items-start gap-4 mb-8">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<div>
+<p class="font-label font-bold text-sm text-primary mb-1">Bank-grade Security</p>
+<p class="text-xs text-on-surface-variant">Your credentials are encrypted and never stored. We only read earnings data for claim verification.</p>
+</div>
+</div>
+<!-- Platforms List -->
+<div class="space-y-4">
+<!-- Platform Item: Linked State -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] flex items-center justify-between border-l-4 border-secondary">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="professional graphic logo of Swiggy food delivery platform in minimalist style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDcSFDGWAMqNWObKj-eidMPyFKiW7X86mfkAi8qXXDXwKh5DMwb0vRP9RV5jo-n9W4E_VoyKc4Ol7-cmNyWvTyrA34cpjJjwlyFQXhO3Ovt4vhKOIbgpOEf3-nrklu45YYbfG_-_4creanqQzb46XeVcvwIbuId4FsH8ASpuxuWK5h3Pqw-yLrIW-l4tOi5_KbscpjJxxz6SvazpUiCeTdbjb5XyKvefu2DxzR3szR-ldsCprbq0QNJGq9b1uLzr35qaGeqj6bUOknh"/>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Swiggy</p>
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<p class="text-[10px] font-bold text-on-secondary-container uppercase tracking-widest">Linked</p>
+</div>
+</div>
+</div>
+<button class="bg-surface-container-high px-4 py-2 rounded-lg text-xs font-bold text-primary">Manage</button>
+</div>
+<!-- Platform Item: Actionable -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="professional graphic logo of Zomato food delivery platform in minimalist style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSAfXs7CE_VBAjZyFes2uvcyahqHl7Kpx3icAAFqjKEGCzueU3DL4H3btKSKppk5xUOo_8KFQWvibsJNly4OgEBxVSr-Ytq8fHMjtqdcPOar_CVw3Ofp6WRsnGY_SY791N8jMfhmiIsUxiRrr8Lb53-OkIiRwt_wT8xwAiRzbjH3oW0CX5cFm0mqnaCWC7H4BcT94RkATLADBFCSRd2UcDzSfX2jEObw2HiatVDodZcGbNBIT52oyFP0I2LqZ1EhGX8afdyaShbrg6"/>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Zomato</p>
+<p class="text-xs text-on-surface-variant italic">Detection ready</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95">Link Account</button>
+</div>
+<!-- Platform Item: Actionable -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="professional graphic logo of Zepto quick commerce platform in minimalist style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkGD3b-bj-FTlgnI8ryfZn-UV_plKYywGXJ3BDzjt5apeMLtGJbdgd9Kthx0JXV0_JG2LkZA6OGSOfERjqZXAzPCcdlYgCQS-vwCrsAp6_HrM1-dehXsDp2qo2RZx2EICKzGsLeLxyYBe2xcFg1R4RrmOlcNGWRiNvnOpF6R9xKfBFhWPHDgnxcxvVrfjIIJsSPw9NXTQSihxCe7Nj0DjvqrzucVOMbltg1MvCDFmSL1cLj9YWxf1B1-n71H8AL75nFi9N6l2UQegK"/>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Zepto</p>
+<p class="text-xs text-on-surface-variant italic">Detection ready</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95">Link Account</button>
+</div>
+<!-- Platform Item: Actionable -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="professional graphic logo of Blinkit grocery delivery platform in minimalist style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUPr84rRVDc7iPVbLrvlpoo_cwswZvt_H0txMYZfNdILBDRZvHxstrd8945iZGNfNeAIxRdZOePJ3UizyNbh5YEwlHUqcEEOoG3HsBdNkxKSkz7fws9rdhASKC1S4p1tfmBPkPK2h0tGSgEgXg99Nk4g92msJNnDEANy_uTNDaP4q_W_bczfgG9-gq-m0VSfsR1vRefpUBXoVPjbiNn03RppKH61MbVyxDMisQNOJ0AJ2ypkZbXzJM0p7meVEMyw6cl872d818zKIV"/>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Blinkit</p>
+<p class="text-xs text-on-surface-variant italic">Detection ready</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95">Link Account</button>
+</div>
+<!-- Platform Item: Actionable -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_20px_rgba(13,28,46,0.04)] flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="professional graphic logo of Amazon Flex logistics platform in minimalist style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5uxsWLxIvM3hNA6KkBE1iX1J2sJdfTw8-RcosgQnIbZN0uMPJa0xLBR7v-opVxMCUPHmIPwu0Ynn1cfJX-bzD_Af3SC9Tl1KiLvBA8_1FkLvvZAZdoLfzqSS0OSdPYcnLZDOtnk8r_cBHKKVHdmG-IEJfPaTMCVJkHYguAAs5XmSISeLv2CNoK1o4vT3b5-Dj2bloge9rTJWYTnEtXJRxoWSKMa7YsHGz-bcl1ZITZEdq_GHwNZy90jXA0xVcbHETm7z0cxBq1K7X"/>
+</div>
+<div>
+<p class="font-headline font-bold text-primary">Amazon Flex</p>
+<p class="text-xs text-on-surface-variant italic">Detection ready</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all active:scale-95">Link Account</button>
+</div>
+</div>
+<!-- Floating Security Badge -->
+<div class="mt-8 flex items-center justify-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="font-label text-[10px] font-semibold tracking-widest uppercase">AES-256 Encrypted Tunnel</span>
+</div>
+</main>
+<!-- Fixed Action Bar -->
+<div class="fixed bottom-0 left-0 w-full p-6 bg-white/80 backdrop-blur-md z-50">
+<div class="max-w-lg mx-auto flex flex-col gap-3">
+<button class="premium-gradient w-full py-4 rounded-xl text-on-primary font-headline font-extrabold tracking-tight shadow-lg transition-transform active:scale-95">
+                Finish Setup
+            </button>
+<p class="text-center text-[10px] text-on-surface-variant">
+                By clicking Finish Setup, you agree to SurelyAI's Data Sync Terms.
+            </p>
+</div>
+</div>
+</body></html>

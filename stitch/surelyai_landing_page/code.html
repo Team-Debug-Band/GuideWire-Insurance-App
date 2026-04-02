@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "surface-container-low": "#eff4ff",
+                "on-secondary-container": "#316e52",
+                "primary-fixed-dim": "#abc9ef",
+                "secondary-fixed": "#b1f0ce",
+                "on-surface-variant": "#43474d",
+                "primary": "#002542",
+                "surface-container-high": "#dce9ff",
+                "secondary": "#2c694e",
+                "tertiary": "#002925",
+                "surface": "#f8f9ff",
+                "on-tertiary": "#ffffff",
+                "on-background": "#0d1c2e",
+                "on-error": "#ffffff",
+                "on-tertiary-fixed": "#00201d",
+                "tertiary-container": "#00413b",
+                "outline-variant": "#c3c6ce",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary-fixed-variant": "#0e5138",
+                "surface-tint": "#436182",
+                "background": "#f8f9ff",
+                "secondary-container": "#aeeecb",
+                "tertiary-fixed-dim": "#6bd8cb",
+                "on-primary-fixed": "#001d35",
+                "on-tertiary-fixed-variant": "#005049",
+                "surface-container": "#e6eeff",
+                "surface-bright": "#f8f9ff",
+                "on-tertiary-container": "#42b4a7",
+                "surface-dim": "#ccdbf3",
+                "primary-container": "#1b3b5a",
+                "inverse-surface": "#233144",
+                "inverse-primary": "#abc9ef",
+                "error-container": "#ffdad6",
+                "on-primary-fixed-variant": "#2a4968",
+                "on-secondary": "#ffffff",
+                "tertiary-fixed": "#89f5e7",
+                "on-primary-container": "#87a5ca",
+                "secondary-fixed-dim": "#95d4b3",
+                "on-error-container": "#93000a",
+                "surface-container-highest": "#d5e3fc",
+                "on-surface": "#0d1c2e",
+                "on-secondary-fixed": "#002114",
+                "surface-variant": "#d5e3fc",
+                "primary-fixed": "#d1e4ff",
+                "outline": "#73777e",
+                "on-primary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "error": "#ba1a1a"
+              },
+              fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+      </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #002542 0%, #1b3b5a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-background selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- Top Navigation -->
+<nav class="bg-[#f8f9ff] dark:bg-slate-950 flex justify-between items-center w-full px-6 py-3 shadow-[0_4px_20px_rgba(13,28,46,0.04)] sticky top-0 z-50">
+<div class="text-lg font-black text-[#002542] dark:text-white tracking-tighter uppercase font-headline">
+            SURELY<span class="text-on-secondary-container">AI</span>
+</div>
+<div class="hidden md:flex items-center space-x-8 font-headline font-bold tracking-tight text-sm uppercase text-slate-500">
+<a class="text-[#002542] hover:bg-[#dce9ff] transition-all px-4 py-2 rounded-md" href="#">Platform</a>
+<a class="hover:bg-[#dce9ff] transition-all px-4 py-2 rounded-md" href="#">How it works</a>
+<a class="hover:bg-[#dce9ff] transition-all px-4 py-2 rounded-md" href="#">For Partners</a>
+</div>
+<div class="flex items-center space-x-4">
+<button class="bg-primary-container text-white px-5 py-2 rounded-xl font-headline font-bold text-sm tracking-tight hover:scale-105 active:scale-95 duration-200">
+                GET STARTED
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative pt-20 pb-32 overflow-hidden px-6">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-7 z-10">
+<div class="inline-flex items-center space-x-2 bg-surface-container-high px-3 py-1 rounded-full mb-6">
+<span class="material-symbols-outlined text-sm text-secondary">verified</span>
+<span class="font-label text-xs font-bold uppercase tracking-widest text-primary">Parametric Resilience v2.4</span>
+</div>
+<h1 class="font-headline font-extrabold text-5xl md:text-7xl text-primary leading-[1.1] tracking-tighter mb-8">
+                    Income protection that <span class="italic text-on-secondary-container">triggers itself</span> when disruptions hit.
+                </h1>
+<p class="font-body text-lg text-on-surface-variant max-w-xl mb-10 leading-relaxed">
+                    SurelyAI uses zero-touch parametric triggers to instantly compensate gig workers for income lost due to weather, curfews, or platform outages. No claims. No waiting. Just data.
+                </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<button class="bg-gradient-to-br from-primary to-primary-container text-white px-8 py-4 rounded-xl font-headline font-bold text-base shadow-lg hover:translate-y-[-2px] transition-transform flex items-center justify-center space-x-3">
+<span>Enter Worker Demo</span>
+<span class="material-symbols-outlined">trending_up</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant/20 text-primary px-8 py-4 rounded-xl font-headline font-bold text-base hover:bg-surface-container-low transition-colors flex items-center justify-center space-x-3">
+<span>Enter Admin Demo</span>
+<span class="material-symbols-outlined">analytics</span>
+</button>
+</div>
+</div>
+<div class="lg:col-span-5 relative">
+<!-- Abstract Data Visualization Card -->
+<div class="bg-surface-container-lowest rounded-[2rem] p-8 shadow-[0_12px_40px_rgba(13,28,46,0.08)] relative overflow-hidden group">
+<div class="flex justify-between items-start mb-8">
+<div>
+<div class="label-md font-label uppercase tracking-widest text-outline text-[10px] mb-1">Live Event Monitoring</div>
+<div class="text-2xl font-headline font-bold text-primary tabular-nums">NYC Storm Front</div>
+</div>
+<div class="flex space-x-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim animate-pulse"></span>
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim/40"></span>
+</div>
+</div>
+<div class="space-y-4 mb-8">
+<div class="bg-surface-container p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">thunderstorm</span>
+<span class="font-body font-medium text-primary">Precipitation Threshold</span>
+</div>
+<span class="font-label font-bold text-secondary">2.4mm/hr</span>
+</div>
+<div class="bg-secondary-container/30 p-4 rounded-xl border border-secondary/10 flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body font-medium text-secondary">Payout Triggered</span>
+</div>
+<span class="font-headline font-black text-secondary">$42.50</span>
+</div>
+</div>
+<div class="h-32 flex items-end space-x-2">
+<div class="w-full bg-primary/10 rounded-t-lg h-12"></div>
+<div class="w-full bg-primary/10 rounded-t-lg h-16"></div>
+<div class="w-full bg-primary/20 rounded-t-lg h-24"></div>
+<div class="w-full bg-secondary rounded-t-lg h-32"></div>
+<div class="w-full bg-primary/10 rounded-t-lg h-14"></div>
+<div class="w-full bg-primary/10 rounded-t-lg h-20"></div>
+</div>
+</div>
+<!-- Floating Decorative Elements -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-secondary/5 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-10 -left-10 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+</div>
+</section>
+<!-- Persona Strip -->
+<section class="bg-surface-container-low py-12">
+<div class="max-w-7xl mx-auto px-6">
+<div class="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0">
+<div class="font-headline font-bold text-primary opacity-50 uppercase tracking-widest text-xs">Empowering partners across</div>
+<div class="flex flex-wrap justify-center gap-12 items-center grayscale opacity-70">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-3xl">restaurant</span>
+<span class="font-headline font-extrabold text-xl tracking-tighter">FOOD</span>
+</div>
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-3xl">local_grocery_store</span>
+<span class="font-headline font-extrabold text-xl tracking-tighter">GROCERY</span>
+</div>
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-3xl">local_shipping</span>
+<span class="font-headline font-extrabold text-xl tracking-tighter">E-COMMERCE</span>
+</div>
+</div>
+<div class="hidden lg:block w-32 h-px bg-outline-variant/30"></div>
+</div>
+</div>
+</section>
+<!-- Zero-Touch Explanation (Editorial Layout) -->
+<section class="py-24 px-6 bg-surface">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div>
+<h2 class="font-headline font-extrabold text-4xl text-primary mb-8 leading-tight">Zero-Touch Intelligence</h2>
+<div class="space-y-12">
+<div class="flex items-start space-x-6">
+<div class="bg-primary-container p-4 rounded-xl text-white">
+<span class="material-symbols-outlined">rainy</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-primary mb-2">Climate Disruptions</h3>
+<p class="font-body text-on-surface-variant leading-relaxed">Hyper-local weather data triggers payouts when storms or extreme heat prevent safe delivery windows.</p>
+</div>
+</div>
+<div class="flex items-start space-x-6">
+<div class="bg-secondary p-4 rounded-xl text-white">
+<span class="material-symbols-outlined">lock_clock</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-xl text-primary mb-2">Social &amp; Operational Triggers</h3>
+<p class="font-body text-on-surface-variant leading-relaxed">Instant protection against government-mandated curfews, civic strikes, or platform-wide technical outages.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-highest aspect-[4/5] rounded-3xl overflow-hidden relative group">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="abstract architectural visualization of modern urban infrastructure with cool blue lighting and parametric glass surfaces" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD64NxbQ3CVy4faffWhusKbz3K9Qv9xTPIwCvGrniREaVa7zJCH3AlST5YcxFj-jYmWRdnWBr2P5uuleTtXh8dTj3JdxxqM6RQeYrcosbBwdL0TZJ4J6tHfHr-cNUkVIchZPAXKGNJMhBpOhNOz6LnpJCOkTjEoyASLg9TSp4RBguCsNPPWsqEAtWXDvfLS9zuMEc7Dvub45IaisGo8OTilUestaufR5Zd4Qu6cDcYwyv4gbYCD33C-h4btpiyq4XXs7Uqs9dfONsmb"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent p-6 flex flex-col justify-end">
+<span class="font-headline font-bold text-white">Reliability</span>
+</div>
+</div>
+<div class="bg-surface-container-highest aspect-[4/5] rounded-3xl mt-12 overflow-hidden relative group">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" data-alt="close up of digital sensors and clean circuit patterns glowing with soft teal light on a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5IVNuZiENC3bjhGHzDyodJ94bbo7f4YgIbemeCM-2qs3i-oBA636U1vbVABneGmmdo-6n35m69LdnZQvCclgh33KYrmeyKO_xj5v4OFON4-jLW0Bf8dZgEcuG3ZQnVDOTcDs9VK-DVyUsI7ih5VAqcG43-6JNkBZvVwoTg0tXOkR3rn1cadsViKDGE7drE2mw1Nju_UhVnM2wOMXKUuPcnKNPmryMaW4Kc8CeRI55MLoTjvvRJKE-Nx5sA16_secbZjyvFabOhn7i"/>
+<div class="absolute inset-0 bg-gradient-to-t from-secondary/80 to-transparent p-6 flex flex-col justify-end">
+<span class="font-headline font-bold text-white">Precision</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How it Works: Asymmetric Grid -->
+<section class="py-24 px-6 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-20">
+<span class="font-label uppercase tracking-widest text-on-secondary-container font-bold text-xs">The Protocol</span>
+<h2 class="font-headline font-extrabold text-4xl text-primary mt-4">How SurelyAI Orchestrates Recovery</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl hover:translate-y-[-8px] transition-transform duration-300">
+<div class="text-6xl font-headline font-black text-surface-container-highest mb-6 tabular-nums">01</div>
+<span class="material-symbols-outlined text-secondary mb-4">sensors</span>
+<h4 class="font-headline font-bold text-xl text-primary mb-3">Detect Event</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">Our AI nodes monitor real-time weather, platform status, and civic APIs 24/7.</p>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl md:mt-8 hover:translate-y-[-8px] transition-transform duration-300">
+<div class="text-6xl font-headline font-black text-surface-container-highest mb-6 tabular-nums">02</div>
+<span class="material-symbols-outlined text-secondary mb-4">calculate</span>
+<h4 class="font-headline font-bold text-xl text-primary mb-3">Estimate Loss</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">Aggregated delivery data predicts your average missed earnings for the disruption window.</p>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl hover:translate-y-[-8px] transition-transform duration-300">
+<div class="text-6xl font-headline font-black text-surface-container-highest mb-6 tabular-nums">03</div>
+<span class="material-symbols-outlined text-secondary mb-4">verified_user</span>
+<h4 class="font-headline font-bold text-xl text-primary mb-3">Fraud Checks</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">Automated identity and activity verification ensures legitimate protection for all users.</p>
+</div>
+<!-- Step 4 -->
+<div class="bg-surface-container-lowest p-8 rounded-3xl md:mt-8 hover:translate-y-[-8px] transition-transform duration-300">
+<div class="text-6xl font-headline font-black text-surface-container-highest mb-6 tabular-nums">04</div>
+<span class="material-symbols-outlined text-secondary mb-4">bolt</span>
+<h4 class="font-headline font-bold text-xl text-primary mb-3">Instant Payout</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">Funds are pushed to your digital wallet the moment the disruption is verified.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Why it Wins: Bento Grid Layout -->
+<section class="py-24 px-6 bg-surface-bright">
+<div class="max-w-7xl mx-auto">
+<h2 class="font-headline font-extrabold text-4xl text-primary mb-16 text-center">Built for Professional Reliability</h2>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto lg:h-[600px]">
+<!-- Multi-platform Coverage -->
+<div class="md:col-span-8 bg-primary text-white rounded-[2rem] p-10 flex flex-col justify-between relative overflow-hidden group">
+<div class="z-10">
+<span class="material-symbols-outlined text-secondary-fixed text-4xl mb-6">dynamic_feed</span>
+<h3 class="font-headline font-bold text-3xl mb-4">Multi-platform Coverage</h3>
+<p class="font-body text-primary-fixed-dim max-w-md text-lg">One policy covers you across UberEats, DoorDash, Instacart, and more. Your income is protected, regardless of the app.</p>
+</div>
+<div class="absolute bottom-0 right-0 w-1/2 h-full opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-[300px]" style="font-variation-settings: 'FILL' 1;">layers</span>
+</div>
+</div>
+<!-- AI Explainability -->
+<div class="md:col-span-4 bg-surface-container-high rounded-[2rem] p-10 flex flex-col justify-between border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary text-4xl mb-6">psychology_alt</span>
+<div>
+<h3 class="font-headline font-bold text-2xl text-primary mb-4">Explainable AI</h3>
+<p class="font-body text-on-surface-variant text-sm leading-relaxed">Transparency is our core. Every payout calculation is readable and auditable by the policyholder.</p>
+</div>
+</div>
+<!-- Admin Simulator -->
+<div class="md:col-span-5 bg-secondary-container rounded-[2rem] p-10 flex flex-col justify-between group overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-headline font-bold text-2xl text-on-secondary-fixed mb-4">Parametric Simulator</h3>
+<p class="font-body text-on-secondary-fixed-variant text-sm mb-6">Test triggers and model risk in a real-time sandbox before deployment.</p>
+<button class="bg-on-secondary-fixed text-white px-6 py-2 rounded-lg font-headline font-bold text-sm tracking-tight hover:bg-on-secondary-fixed-variant transition-colors">
+                            Launch Simulator
+                        </button>
+</div>
+<div class="absolute bottom-[-20px] right-[-20px] w-48 h-48 bg-secondary/10 rounded-full group-hover:scale-110 transition-transform duration-500"></div>
+</div>
+<!-- No Manual Claims -->
+<div class="md:col-span-7 bg-surface-container-lowest rounded-[2rem] p-10 flex items-center border border-outline-variant/10 shadow-sm">
+<div class="flex-shrink-0 w-16 h-16 bg-error-container text-error rounded-2xl flex items-center justify-center mr-8">
+<span class="material-symbols-outlined text-3xl">cancel</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-2xl text-primary mb-2">Zero Claim Forms</h3>
+<p class="font-body text-on-surface-variant leading-relaxed">We've eliminated the claims department. If the data says you're owed, you're paid. Period.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="py-24 px-6 relative overflow-hidden">
+<div class="max-w-4xl mx-auto bg-primary-container rounded-[3rem] p-12 md:p-20 text-center text-white shadow-2xl relative z-10">
+<h2 class="font-headline font-extrabold text-4xl md:text-5xl mb-8">Ready for the future of income stability?</h2>
+<p class="font-body text-primary-fixed-dim text-lg mb-12 max-w-xl mx-auto">Join the next generation of delivery partners securing their livelihood with data-driven insurance.</p>
+<div class="flex flex-col sm:flex-row justify-center gap-6">
+<button class="bg-secondary text-white px-10 py-5 rounded-xl font-headline font-extrabold text-lg shadow-lg hover:bg-on-secondary-container transition-colors">
+                    Get Started Free
+                </button>
+<button class="bg-transparent border border-white/20 hover:bg-white/10 px-10 py-5 rounded-xl font-headline font-extrabold text-lg transition-colors">
+                    View Enterprise API
+                </button>
+</div>
+</div>
+<!-- Decorative Background Pattern -->
+<div class="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none">
+<div class="grid grid-cols-12 gap-1 w-full h-full">
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+<div class="border-l border-primary"></div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-white py-16 px-6 border-t border-outline-variant/10">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="text-2xl font-black text-[#002542] tracking-tighter uppercase font-headline mb-6">
+                    SURELY<span class="text-on-secondary-container">AI</span>
+</div>
+<p class="font-body text-on-surface-variant max-w-sm mb-8 leading-relaxed">
+                    Parametric income protection for the modern workforce. Licensed and regulated resilience for delivery professionals worldwide.
+                </p>
+<div class="flex space-x-4">
+<a class="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center text-primary hover:bg-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">share</span>
+</a>
+<a class="w-10 h-10 bg-surface-container rounded-full flex items-center justify-center text-primary hover:bg-primary-fixed transition-colors" href="#">
+<span class="material-symbols-outlined text-lg">public</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-headline font-bold text-primary mb-6 uppercase tracking-widest text-xs">Resources</h5>
+<ul class="space-y-4 font-body text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">Developer Portal</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Incident Reports</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-headline font-bold text-primary mb-6 uppercase tracking-widest text-xs">Company</h5>
+<ul class="space-y-4 font-body text-on-surface-variant">
+<li><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Press Kit</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-outline-variant/10 text-center text-xs font-label text-outline uppercase tracking-widest">
+            © 2024 SurelyAI Technologies Inc. • Engineered with Precision
+        </div>
+</footer>
+</body></html>

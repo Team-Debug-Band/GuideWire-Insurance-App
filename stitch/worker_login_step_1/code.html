@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SurelyAI Worker Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-low": "#eff4ff",
+            "on-secondary-container": "#316e52",
+            "primary-fixed-dim": "#abc9ef",
+            "secondary-fixed": "#b1f0ce",
+            "on-surface-variant": "#43474d",
+            "primary": "#002542",
+            "surface-container-high": "#dce9ff",
+            "secondary": "#2c694e",
+            "tertiary": "#002925",
+            "surface": "#f8f9ff",
+            "on-tertiary": "#ffffff",
+            "on-background": "#0d1c2e",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed": "#00201d",
+            "tertiary-container": "#00413b",
+            "outline-variant": "#c3c6ce",
+            "inverse-on-surface": "#eaf1ff",
+            "on-secondary-fixed-variant": "#0e5138",
+            "surface-tint": "#436182",
+            "background": "#f8f9ff",
+            "secondary-container": "#aeeecb",
+            "tertiary-fixed-dim": "#6bd8cb",
+            "on-primary-fixed": "#001d35",
+            "on-tertiary-fixed-variant": "#005049",
+            "surface-container": "#e6eeff",
+            "surface-bright": "#f8f9ff",
+            "on-tertiary-container": "#42b4a7",
+            "surface-dim": "#ccdbf3",
+            "primary-container": "#1b3b5a",
+            "inverse-surface": "#233144",
+            "inverse-primary": "#abc9ef",
+            "error-container": "#ffdad6",
+            "on-primary-fixed-variant": "#2a4968",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#89f5e7",
+            "on-primary-container": "#87a5ca",
+            "secondary-fixed-dim": "#95d4b3",
+            "on-error-container": "#93000a",
+            "surface-container-highest": "#d5e3fc",
+            "on-surface": "#0d1c2e",
+            "on-secondary-fixed": "#002114",
+            "surface-variant": "#d5e3fc",
+            "primary-fixed": "#d1e4ff",
+            "outline": "#73777e",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "error": "#ba1a1a"
+          },
+          fontFamily: {
+            "headline": ["Manrope"],
+            "body": ["Inter"],
+            "label": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .premium-gradient {
+      background: linear-gradient(135deg, #002542 0%, #1b3b5a 100%);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-background min-h-screen flex flex-col items-center">
+<main class="w-full max-w-md mx-auto min-h-screen flex flex-col px-6 py-8 relative overflow-hidden">
+<!-- Visual Texture Element (Parametric Data Aesthetic) -->
+<div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-surface-container rounded-full opacity-50 blur-3xl -z-10"></div>
+<div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 bg-secondary-container/20 rounded-full opacity-40 blur-3xl -z-10"></div>
+<!-- Header / Brand Section -->
+<header class="mt-8 mb-12">
+<div class="flex items-center gap-2 mb-8">
+<div class="w-10 h-10 premium-gradient rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+</div>
+<span class="font-headline font-extrabold tracking-tighter text-2xl text-primary">SURELY<span class="text-secondary">AI</span></span>
+</div>
+<h1 class="font-headline font-bold text-3xl leading-tight tracking-tight text-primary">
+        Secure your income in 3 minutes.
+      </h1>
+<p class="text-on-surface-variant mt-4 font-medium">
+        Access your delivery partner portal and activate real-time payout protection.
+      </p>
+</header>
+<!-- Login Form Section -->
+<section class="flex-grow">
+<div class="space-y-6">
+<!-- Input Group -->
+<div class="relative">
+<label class="block text-xs font-bold uppercase tracking-widest text-primary mb-2 ml-1">
+            Mobile Number
+          </label>
+<div class="group transition-all duration-300">
+<div class="flex items-center bg-surface-container-lowest rounded-xl p-4 shadow-sm border-b-2 border-transparent group-focus-within:border-primary group-focus-within:bg-surface-bright transition-all">
+<span class="text-primary font-bold mr-3 border-r border-outline-variant pr-3">+1</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-lg font-body tabular-nums placeholder:text-outline-variant text-primary" placeholder="000-000-0000" type="tel"/>
+</div>
+</div>
+<!-- Data Pulse indicator -->
+<div class="flex items-center mt-3 ml-1 gap-2">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary-fixed-dim"></span>
+</span>
+<span class="text-[10px] font-bold uppercase tracking-wider text-outline">Real-time verification active</span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full premium-gradient py-5 rounded-xl shadow-lg active:scale-95 transition-all duration-200">
+<span class="text-white font-headline font-bold text-base tracking-wide flex items-center justify-center gap-2">
+            Send OTP
+            <span class="material-symbols-outlined text-xl">arrow_forward</span>
+</span>
+</button>
+<!-- Secondary Action -->
+<div class="pt-4 text-center">
+<button class="text-sm font-semibold text-primary hover:text-secondary transition-colors inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-lg">badge</span>
+            Login with Employee ID
+          </button>
+</div>
+</div>
+</section>
+<!-- Illustrative/Background Element - Glassmorphism Card -->
+<div class="mb-12 p-6 rounded-2xl bg-surface-container-high/40 backdrop-blur-md border border-white/20">
+<div class="flex gap-4 items-start">
+<div class="bg-white p-2 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+</div>
+<div>
+<h3 class="font-headline font-bold text-sm text-primary">Parametric Security</h3>
+<p class="text-xs text-on-surface-variant leading-relaxed mt-1">
+            Your login is protected by advanced biometric signals and behavioral risk analysis.
+          </p>
+</div>
+</div>
+</div>
+<!-- Footer Section -->
+<footer class="mt-auto pt-8 pb-4">
+<div class="flex flex-col items-center gap-4">
+<div class="w-full h-[1px] bg-gradient-to-r from-transparent via-outline-variant/30 to-transparent"></div>
+<p class="text-[10px] text-center text-outline font-medium uppercase tracking-widest leading-relaxed">
+          Powered by <span class="text-primary font-bold">AI-driven risk triggers</span><br/>
+          Licensed and Regulated Financial Architecture
+        </p>
+</div>
+</footer>
+<!-- Floating Background Image Layer -->
+<div class="fixed inset-0 -z-20 pointer-events-none opacity-5">
+<img alt="Decorative architectural background" class="w-full h-full object-cover grayscale" data-alt="abstract close-up of architectural glass and steel structure with sharp clean lines and geometric shadows in cool tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAz0HK9FLnEdIw575vC6PuevHNjMWf2kLeRPCoPGryKlsK0aJbZllQQDDzSknhbNJ8UZk18-TtjFUAIehiCZlqKOzirfJqF88QZr5MZhyta4F5BeTBATuUPYwZSMQMVe5QMvvPske6rY8sKiPZToWaPavDQyap1Nd30BGvD1hRK1zDoZ33f2AFYPDttC_PbuXWa8LO6yWNSuqQFbOD2ywAaWPxiGOO4i4sUco9ddf5xBVobLMVWNEPCSgWyXenAQpGKfxMRjhFDGkAi"/>
+</div>
+</main>
+</body></html>
