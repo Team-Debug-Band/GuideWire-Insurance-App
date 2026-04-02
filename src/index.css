@@ -1,0 +1,80 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-headline: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-surface-container-low: #eff4ff;
+  --color-on-secondary-container: #316e52;
+  --color-primary-fixed-dim: #abc9ef;
+  --color-secondary-fixed: #b1f0ce;
+  --color-on-surface-variant: #43474d;
+  --color-primary: #002542;
+  --color-surface-container-high: #dce9ff;
+  --color-secondary: #2c694e;
+  --color-tertiary: #002925;
+  --color-surface: #f8f9ff;
+  --color-on-tertiary: #ffffff;
+  --color-on-background: #0d1c2e;
+  --color-on-error: #ffffff;
+  --color-on-tertiary-fixed: #00201d;
+  --color-tertiary-container: #00413b;
+  --color-outline-variant: #c3c6ce;
+  --color-inverse-on-surface: #eaf1ff;
+  --color-on-secondary-fixed-variant: #0e5138;
+  --color-surface-tint: #436182;
+  --color-background: #f8f9ff;
+  --color-secondary-container: #aeeecb;
+  --color-tertiary-fixed-dim: #6bd8cb;
+  --color-on-primary-fixed: #001d35;
+  --color-on-tertiary-fixed-variant: #005049;
+  --color-surface-container: #e6eeff;
+  --color-surface-bright: #f8f9ff;
+  --color-on-tertiary-container: #42b4a7;
+  --color-surface-dim: #ccdbf3;
+  --color-primary-container: #1b3b5a;
+  --color-inverse-surface: #233144;
+  --color-inverse-primary: #abc9ef;
+  --color-error-container: #ffdad6;
+  --color-on-primary-fixed-variant: #2a4968;
+  --color-on-secondary: #ffffff;
+  --color-tertiary-fixed: #89f5e7;
+  --color-on-primary-container: #87a5ca;
+  --color-secondary-fixed-dim: #95d4b3;
+  --color-on-error-container: #93000a;
+  --color-surface-container-highest: #d5e3fc;
+  --color-on-surface: #0d1c2e;
+  --color-on-secondary-fixed: #002114;
+  --color-surface-variant: #d5e3fc;
+  --color-primary-fixed: #d1e4ff;
+  --color-outline: #73777e;
+  --color-on-primary: #ffffff;
+  --color-surface-container-lowest: #ffffff;
+  --color-error: #ba1a1a;
+
+  --radius-xl: 0.5rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+}
+
+@layer base {
+  body {
+    @apply bg-surface font-body text-on-surface antialiased;
+  }
+}
+
+.premium-gradient {
+  background: linear-gradient(135deg, #002542 0%, #1b3b5a 100%);
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, #002542 0%, #1b3b5a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

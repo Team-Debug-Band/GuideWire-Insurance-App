@@ -1,0 +1,7 @@
+{
+  "name": "SurelyAI - Parametric Income Protection",
+  "description": "Zero-touch parametric income protection for gig workers. Instant payouts triggered by real-time environmental data.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
