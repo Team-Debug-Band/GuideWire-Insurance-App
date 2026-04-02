@@ -5,11 +5,13 @@ import {
   Radio, Calculator, ShieldAlert, Layers, BrainCircuit, PlayCircle, 
   XCircle, Share2, Globe, Settings, Home, History, Bell, User as UserIcon,
   ChevronRight, CheckCircle2, AlertTriangle, Info, Mail, LogIn,
-  ExternalLink, Smartphone, Database, Cpu, ArrowLeft, MapPin, MessageSquare
+  ExternalLink, Smartphone, Database, Cpu, ArrowLeft, MapPin, MessageSquare, Search
 } from 'lucide-react';
 import { 
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer 
 } from 'recharts';
+import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import { Button } from './components/Button';
 import { DataPulse } from './components/DataPulse';
 import { cn } from './lib/utils';
@@ -33,67 +35,43 @@ const radarData = [
 // --- Sub-components ---
 
 const RiskMap = ({ location, activeEvent }: { location?: { latitude: number, longitude: number }, activeEvent?: any }) => {
-  // Simple SVG City Grid
+  const center: [number, number] = location ? [location.latitude, location.longitude] : [12.9716, 77.5946];
+
   return (
-    <div className="relative w-full h-full bg-[#f8f9fa] overflow-hidden">
-      <svg viewBox="0 0 800 600" className="w-full h-full">
-        {/* Grid Lines */}
-        <defs>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#e9ecef" strokeWidth="1" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-        
-        {/* Simplified City Blocks */}
-        <g opacity="0.4">
-          <rect x="100" y="100" width="120" height="80" rx="4" fill="#dee2e6" />
-          <rect x="240" y="100" width="100" height="150" rx="4" fill="#dee2e6" />
-          <rect x="360" y="80" width="200" height="100" rx="4" fill="#dee2e6" />
-          <rect x="100" y="200" width="120" height="120" rx="4" fill="#dee2e6" />
-          <rect x="240" y="280" width="150" height="80" rx="4" fill="#dee2e6" />
-          <rect x="420" y="200" width="140" height="160" rx="4" fill="#dee2e6" />
-          <rect x="100" y="340" width="100" height="180" rx="4" fill="#dee2e6" />
-          <rect x="220" y="380" width="180" height="140" rx="4" fill="#dee2e6" />
-          <rect x="420" y="380" width="140" height="140" rx="4" fill="#dee2e6" />
-        </g>
-
-        {/* Major Roads */}
-        <path d="M 0 190 L 800 190" stroke="#ced4da" strokeWidth="8" fill="none" />
-        <path d="M 230 0 L 230 600" stroke="#ced4da" strokeWidth="8" fill="none" />
-        <path d="M 410 0 L 410 600" stroke="#ced4da" strokeWidth="8" fill="none" />
-        <path d="M 0 370 L 800 370" stroke="#ced4da" strokeWidth="8" fill="none" />
-
-        {/* Risk Zone Overlay */}
+    <div className="w-full h-full relative">
+      <MapContainer 
+        center={center} 
+        zoom={12} 
+        style={{ height: '100%', width: '100%' }} 
+        zoomControl={false}
+        scrollWheelZoom={false}
+      >
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        />
+        {location && (
+          <Marker position={[location.latitude, location.longitude]} icon={L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background-color:#002542;width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 0 10px rgba(0,0,0,0.5);"></div>`,
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+          })}>
+            <Popup>
+              <div className="p-1 text-[10px] font-bold text-primary">YOU ARE HERE</div>
+            </Popup>
+          </Marker>
+        )}
         {activeEvent && (
-          <motion.circle 
-            cx="400" cy="300" r="150" 
-            fill="rgba(239, 68, 68, 0.1)" 
-            stroke="rgba(239, 68, 68, 0.3)" 
-            strokeWidth="2"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ repeat: Infinity, duration: 3, repeatType: 'reverse' }}
+          <Circle
+            center={[center[0] + 0.005, center[1] + 0.005]}
+            radius={1500}
+            pathOptions={{ fillColor: '#ba1a1a', color: '#ba1a1a', weight: 1, fillOpacity: 0.2 }}
           />
         )}
-
-        {/* User Location Marker */}
-        <motion.g 
-          initial={{ y: -20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          {/* Mocking user location near center if not provided */}
-          <circle cx="380" cy="280" r="8" fill="#0d1c2e" />
-          <circle cx="380" cy="280" r="16" fill="rgba(13, 28, 46, 0.2)" />
-          <path d="M 380 280 L 380 260" stroke="#0d1c2e" strokeWidth="2" />
-          <rect x="340" y="230" width="80" height="24" rx="12" fill="#0d1c2e" />
-          <text x="380" y="246" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">YOU ARE HERE</text>
-        </motion.g>
-      </svg>
+      </MapContainer>
       
-      {/* Locality Label */}
-      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1.5 rounded-full border border-outline-variant/20 shadow-sm flex items-center gap-2">
+      <div className="absolute top-4 right-4 z-[1000] bg-white/90 backdrop-blur px-3 py-1.5 rounded-full border border-outline-variant/20 shadow-sm flex items-center gap-2">
         <MapPin className="w-3 h-3 text-primary" />
         <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
           {location ? "Current Location Active" : "Koramangala, Bangalore"}
@@ -116,7 +94,7 @@ const StarDisplay = () => (
           dataKey="A"
           stroke="#0d1c2e"
           fill="#0d1c2e"
-          fillOpacity={0.15}
+          fillOpacity={0.35}
         />
       </RadarChart>
     </ResponsiveContainer>
@@ -459,6 +437,15 @@ const OnboardingLogin = ({ onBack }: { onBack: () => void }) => {
           </Button>
         </form>
 
+        <Button 
+          onClick={() => mockLogin('admin@surely.ai')} 
+          className="w-full py-5 flex items-center justify-center gap-3 bg-primary text-white border border-primary hover:bg-primary/90" 
+          size="lg"
+        >
+          <ShieldCheck className="w-5 h-5" />
+          <span>Login as Admin</span>
+        </Button>
+
         <div className="relative py-4">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-outline-variant/30"></div></div>
           <div className="relative flex justify-center text-xs uppercase"><span className="bg-surface px-2 text-outline font-bold tracking-widest">Or continue with</span></div>
@@ -633,28 +620,54 @@ const OnboardingPersona = ({ onNext, onBack }: { onNext: () => void, onBack: () 
 const OnboardingLocation = ({ onNext, onBack }: { onNext: () => void, onBack: () => void }) => {
   const { updateProfile } = useFirebase();
   const [locating, setLocating] = useState(false);
-  const [location, setLocation] = useState<{ lat: number, lng: number } | null>(null);
+  const [location, setLocation] = useState<{ lat: number, lng: number, name?: string } | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
 
   const handleGetLocation = () => {
     setLocating(true);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition((position) => {
-        const newLoc = { lat: position.coords.latitude, lng: position.coords.longitude };
+        const newLoc = { lat: position.coords.latitude, lng: position.coords.longitude, name: 'Current Location' };
         setLocation(newLoc);
         setLocating(false);
       }, (error) => {
         console.error("Location Error:", error);
         setLocating(false);
-        // Fallback or alert
       });
     } else {
       setLocating(false);
     }
   };
 
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+    setSearching(true);
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&countrycodes=in`);
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (err) {
+      console.error("Search Error:", err);
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const selectLocation = (res: any) => {
+    setLocation({ lat: parseFloat(res.lat), lng: parseFloat(res.lon), name: res.display_name });
+    setSearchResults([]);
+    setSearchQuery(res.display_name);
+  };
+
   const handleSubmit = async () => {
     if (location) {
-      await updateProfile({ location: { latitude: location.lat, longitude: location.lng } });
+      await updateProfile({ 
+        location: { latitude: location.lat, longitude: location.lng },
+        city: location.name?.split(',')[0] || 'Unknown',
+        zone: location.name?.split(',')[1]?.trim() || 'Unknown'
+      });
     }
     onNext();
   };
@@ -663,33 +676,74 @@ const OnboardingLocation = ({ onNext, onBack }: { onNext: () => void, onBack: ()
     <div className="min-h-screen bg-surface flex flex-col px-6 py-8 max-w-md mx-auto w-full">
       <OnboardingHeader title="Precise Location" onBack={onBack} step={3} totalSteps={5} />
 
-      <section className="mb-8">
-        <p className="text-on-surface-variant text-sm leading-relaxed">Surely.AI uses hyper-local sensing. Granting location access ensures your protection triggers are 100% accurate for your exact position.</p>
+      <section className="mb-6">
+        <p className="text-on-surface-variant text-sm leading-relaxed">Surely.AI uses hyper-local sensing. Search for your primary work area or grant location access.</p>
       </section>
 
-      <div className="flex-grow flex flex-col items-center justify-center space-y-8">
-        <div className="w-32 h-32 bg-surface-container-high rounded-full flex items-center justify-center relative">
-          <div className="absolute inset-0 bg-primary/10 rounded-full animate-ping"></div>
-          <MapPin className="w-12 h-12 text-primary relative z-10" />
-        </div>
-        
-        {location ? (
-          <div className="text-center space-y-2">
-            <div className="flex items-center gap-2 text-secondary font-bold justify-center">
-              <CheckCircle2 className="w-5 h-5" />
-              <span>Location Captured</span>
-            </div>
-            <p className="text-xs text-outline font-mono">{location.lat.toFixed(4)}, {location.lng.toFixed(4)}</p>
+      <div className="space-y-6 flex-grow">
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-outline" />
+            <input 
+              className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl pl-12 pr-4 py-4 text-sm text-on-surface shadow-sm focus:ring-2 focus:ring-primary/20" 
+              placeholder="Search for your locality (e.g. Koramangala)" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            />
+            <button 
+              onClick={handleSearch}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white px-4 py-2 rounded-lg text-xs font-bold"
+            >
+              {searching ? "..." : "Search"}
+            </button>
           </div>
-        ) : (
-          <Button onClick={handleGetLocation} variant="outline" className="gap-2" disabled={locating}>
-            {locating ? "Locating..." : "Grant Access"} <Radio className="w-4 h-4" />
-          </Button>
-        )}
+
+          {searchResults.length > 0 && (
+            <div className="bg-white border border-outline-variant/20 rounded-xl overflow-hidden shadow-xl max-h-60 overflow-y-auto">
+              {searchResults.map((res, i) => (
+                <button 
+                  key={i}
+                  onClick={() => selectLocation(res)}
+                  className="w-full text-left px-4 py-3 text-xs hover:bg-surface-container-low border-b border-outline-variant/5 last:border-0"
+                >
+                  {res.display_name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex-grow h-px bg-outline-variant/20"></div>
+          <span className="text-[10px] font-bold text-outline uppercase tracking-widest">or</span>
+          <div className="flex-grow h-px bg-outline-variant/20"></div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center space-y-6">
+          <div className="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center relative">
+            <div className={cn("absolute inset-0 bg-primary/10 rounded-full", locating && "animate-ping")}></div>
+            <MapPin className="w-10 h-10 text-primary relative z-10" />
+          </div>
+          
+          {location ? (
+            <div className="text-center space-y-1">
+              <div className="flex items-center gap-2 text-secondary font-bold justify-center">
+                <CheckCircle2 className="w-4 h-4" />
+                <span className="text-sm">Location Selected</span>
+              </div>
+              <p className="text-[10px] text-outline font-mono max-w-[200px] truncate">{location.name}</p>
+            </div>
+          ) : (
+            <Button onClick={handleGetLocation} variant="outline" className="gap-2 text-xs" disabled={locating}>
+              {locating ? "Locating..." : "Use Current Location"} <Radio className="w-3 h-3" />
+            </Button>
+          )}
+        </div>
       </div>
 
       <footer className="mt-8">
-        <Button onClick={handleSubmit} className="w-full py-5" size="lg">
+        <Button onClick={handleSubmit} className="w-full py-5" size="lg" disabled={!location && !searchQuery}>
           {location ? "Continue" : "Skip for now"} <ChevronRight className="w-5 h-5" />
         </Button>
       </footer>
@@ -872,7 +926,7 @@ const HomeView = () => {
           <div className="flex justify-between items-start">
             <div>
               <p className="text-on-primary-container font-label text-sm font-semibold tracking-wider uppercase">Weekly Payout Estimate</p>
-              <h2 className="text-5xl font-bold mt-2 tabular-nums tracking-tight">${totalPayouts.toFixed(2)}</h2>
+              <h2 className="text-5xl font-bold mt-2 tabular-nums tracking-tight">₹{totalPayouts.toFixed(2)}</h2>
             </div>
             <div className="bg-secondary px-4 py-2 rounded-full flex items-center gap-2">
               <ShieldCheck className="w-4 h-4" />
@@ -950,7 +1004,7 @@ const HomeView = () => {
                         <p className="text-[10px] text-outline uppercase font-bold">{new Date(p.timestamp?.toDate?.() || Date.now()).toLocaleDateString()}</p>
                       </div>
                     </div>
-                    <span className="font-headline font-black text-secondary">+${p.amount.toFixed(2)}</span>
+                    <span className="font-headline font-black text-secondary">+₹{p.amount.toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
@@ -967,87 +1021,177 @@ const HomeView = () => {
   );
 };
 
-const ClaimsView = () => {
+const ClaimsView = ({ onBack }: { onBack: () => void }) => {
   const { claims } = useFirebase();
   return (
-    <div className="space-y-8">
-      <header>
-        <h2 className="font-headline font-extrabold text-3xl text-primary">Claims History</h2>
-        <p className="text-on-surface-variant">Track your manual and automated protection claims.</p>
-      </header>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10">
-          <h4 className="font-headline font-bold text-primary mb-4">Automated Parametric</h4>
-          <p className="text-sm text-on-surface-variant mb-6">These claims are triggered automatically by Surely.AI sensors. No action required.</p>
-          <div className="space-y-4">
-            {[1, 2].map(i => (
-              <div key={i} className="flex items-center justify-between p-4 bg-white rounded-2xl">
-                <div className="flex items-center gap-3">
-                  <Zap className="w-5 h-5 text-secondary" />
-                  <div>
-                    <p className="text-sm font-bold">Rainfall Threshold</p>
-                    <p className="text-[10px] text-outline font-bold">OCT 12, 2024</p>
-                  </div>
-                </div>
-                <span className="text-secondary font-black">Approved</span>
-              </div>
-            ))}
+    <div className="space-y-8 max-w-5xl mx-auto">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onBack}
+            className="p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="font-headline font-extrabold text-3xl text-primary">Claims Activity</h2>
+            <p className="text-on-surface-variant text-sm">Real-time monitoring of your parametric triggers.</p>
           </div>
         </div>
-        <div className="bg-surface-container-low p-8 rounded-3xl border border-outline-variant/10">
-          <h4 className="font-headline font-bold text-primary mb-4">Manual Appeals</h4>
-          <p className="text-sm text-on-surface-variant mb-6">If you believe an event was missed, you can file a manual appeal here.</p>
-          <Button variant="outline" className="w-full">File New Appeal</Button>
+        <div className="flex items-center gap-2 bg-surface-container-low p-1 rounded-xl border border-outline-variant/10">
+          <button className="px-4 py-2 bg-white rounded-lg shadow-sm text-xs font-bold text-primary">All Activity</button>
+          <button className="px-4 py-2 text-xs font-bold text-outline hover:text-primary transition-colors">Payouts Only</button>
         </div>
-      </div>
-      <div className="bg-surface-container-lowest rounded-3xl overflow-hidden border border-outline-variant/10">
-        <table className="w-full text-left">
-          <thead className="bg-surface-container-high text-[10px] font-bold uppercase tracking-widest text-outline">
-            <tr>
-              <th className="px-6 py-4">Claim ID</th>
-              <th className="px-6 py-4">Type</th>
-              <th className="px-6 py-4">Amount</th>
-              <th className="px-6 py-4">Status</th>
-            </tr>
-          </thead>
-          <tbody className="text-sm">
-            {claims.map(c => (
-              <tr key={c.id} className="border-t border-outline-variant/10">
-                <td className="px-6 py-4 font-mono text-xs">#{c.id.slice(0, 8)}</td>
-                <td className="px-6 py-4 font-medium">{c.reason}</td>
-                <td className="px-6 py-4 font-bold">${c.amount}</td>
-                <td className="px-6 py-4">
-                  <span className={cn(
-                    "px-2 py-1 rounded-full text-[10px] font-bold uppercase",
-                    c.status === 'approved' ? "bg-secondary/10 text-secondary" : "bg-primary/10 text-primary"
-                  )}>
-                    {c.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-            {claims.length === 0 && (
-              <tr>
-                <td colSpan={4} className="px-6 py-12 text-center text-outline italic">No manual claims found.</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      </header>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-[2rem] border border-outline-variant/10 overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-outline-variant/5 bg-surface-container-lowest flex items-center justify-between">
+              <h3 className="font-headline font-bold text-primary">Recent Triggers</h3>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 bg-secondary rounded-full animate-pulse"></span>
+                <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Live Monitoring</span>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-container-low/50">
+                    <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Claim ID</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Type / Reason</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Date</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Amount</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/5">
+                  {claims.map((claim) => (
+                    <tr key={claim.id} className="hover:bg-surface-container-lowest transition-colors">
+                      <td className="px-6 py-4 font-mono text-[10px] text-primary font-bold">#{claim.id.toUpperCase()}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-primary">{claim.reason}</span>
+                          <span className="text-[10px] text-outline uppercase tracking-tighter">Parametric Trigger</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-xs text-on-surface-variant">
+                        {new Date(claim.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                      </td>
+                      <td className="px-6 py-4 font-headline font-bold text-primary">₹{claim.amount.toFixed(2)}</td>
+                      <td className="px-6 py-4">
+                        <span className={cn(
+                          "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                          claim.status === 'approved' ? "bg-secondary/10 text-secondary" : 
+                          claim.status === 'pending' ? "bg-primary/10 text-primary" : "bg-error/10 text-error"
+                        )}>
+                          {claim.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                  {claims.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-6 py-12 text-center text-outline italic">No activity found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-primary text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl"></div>
+            <ShieldCheck className="w-10 h-10 text-secondary mb-6" />
+            <h3 className="font-headline font-bold text-xl mb-2">Payout Architecture</h3>
+            <p className="text-white/70 text-sm leading-relaxed mb-6">
+              Our smart contracts verify triggers across 3 independent data nodes before releasing funds.
+            </p>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/10">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-[10px] font-black">01</div>
+                <span className="text-xs font-bold">Oracle Verification</span>
+              </div>
+              <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/10">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-[10px] font-black">02</div>
+                <span className="text-xs font-bold">Consensus Check</span>
+              </div>
+              <div className="flex items-center gap-3 bg-white/10 p-3 rounded-xl border border-white/10">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-[10px] font-black">03</div>
+                <span className="text-xs font-bold">Instant Settlement</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-surface-container-low p-8 rounded-[2rem] border border-outline-variant/10">
+            <h4 className="font-headline font-bold text-primary mb-4">Manual Review</h4>
+            <p className="text-xs text-on-surface-variant leading-relaxed mb-6">
+              Rare edge cases that fall outside parametric thresholds are routed to our 24/7 human review team.
+            </p>
+            <Button variant="outline" className="w-full text-xs py-4">Request Review</Button>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-const ExplainView = () => {
+const ExplainView = ({ onBack }: { onBack: () => void }) => {
   const { payouts } = useFirebase();
   const lastPayout = payouts[0];
 
   return (
     <div className="space-y-12 max-w-4xl mx-auto">
-      <header className="text-center">
+      <header className="flex flex-col items-center text-center relative">
+        <button 
+          onClick={onBack}
+          className="absolute left-0 top-0 p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
         <h2 className="font-headline font-extrabold text-4xl text-primary mb-4">How it Works</h2>
         <p className="text-on-surface-variant">Understanding the Surely.AI Parametric Protocol.</p>
       </header>
+
+      {lastPayout && (
+        <div className="bg-secondary/5 border-2 border-secondary/20 p-8 rounded-[2.5rem] relative overflow-hidden">
+          <div className="absolute top-4 right-8">
+            <Zap className="text-secondary w-12 h-12 opacity-20" />
+          </div>
+          <h3 className="font-headline font-bold text-secondary mb-4 uppercase tracking-widest text-xs">Latest Payout Analysis</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <p className="text-primary font-headline font-bold text-2xl mb-2">₹{lastPayout.amount.toFixed(2)} Disbursed</p>
+              <p className="text-on-surface-variant text-sm leading-relaxed">
+                Triggered by <span className="font-bold text-primary">{lastPayout.eventType}</span> in your specific zone.
+              </p>
+              <div className="mt-4 p-4 bg-white/50 rounded-xl border border-secondary/10">
+                <p className="text-[10px] font-black uppercase text-secondary tracking-widest mb-1">Exact Reason for Payout</p>
+                <p className="text-xs font-bold text-primary leading-relaxed">
+                  {lastPayout.eventType === 'Rainfall' 
+                    ? "Local sensors detected rainfall exceeding 2.5mm/hr for a continuous period of 32 minutes, meeting the parametric threshold for delivery disruption."
+                    : "Platform API heartbeat failed for 18 consecutive minutes, triggering the operational downtime protection clause."}
+                </p>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl border border-secondary/10 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold text-outline uppercase tracking-widest">Trigger Condition</span>
+                <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Met</span>
+              </div>
+              <p className="text-xs font-bold text-primary">
+                {lastPayout.eventType.includes('Rain') ? "Rainfall > 2.5mm/hr for 30+ mins" : "Platform Downtime > 15m"}
+              </p>
+              <div className="w-full h-1.5 bg-surface-container rounded-full mt-3 overflow-hidden">
+                <div className="w-full h-full bg-secondary"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="space-y-8">
         <div className="bg-surface-container-low p-8 rounded-[2.5rem] border border-outline-variant/10">
           <div className="flex items-center gap-4 mb-6">
@@ -1075,34 +1219,332 @@ const ExplainView = () => {
           <p className="font-body text-on-surface-variant leading-relaxed">
             Once a trigger is verified, our system calculates your estimated loss based on your historical earnings and persona. The funds are then pushed directly to your connected wallet or bank account within minutes.
           </p>
-          {lastPayout && (
-            <div className="mt-8 p-6 bg-white/50 rounded-3xl border border-primary/10">
-              <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Latest Payout Analysis</p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-on-surface-variant">Reason for Payout:</span>
-                <span className="text-sm font-bold text-primary">{lastPayout.eventType}</span>
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-sm font-medium text-on-surface-variant">Trigger Condition:</span>
-                <span className="text-sm font-bold text-secondary">
-                  {lastPayout.eventType.includes('Rain') ? "Rainfall > 2.5mm/hr" : "Platform Downtime > 15m"}
-                </span>
-              </div>
-            </div>
-          )}
+        </div>
+      </div>
+
+      <div className="bg-primary text-white p-12 rounded-[3rem] text-center">
+        <h3 className="font-headline font-bold text-3xl mb-6">Built for the Gig Economy</h3>
+        <p className="text-white/70 max-w-2xl mx-auto mb-10">
+          We understand that for gig workers, time is money. Our protocol is designed to be invisible, automatic, and absolutely transparent.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div>
+            <p className="text-2xl font-black text-secondary mb-1">99.9%</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Uptime</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-secondary mb-1">&lt; 5m</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Payout Speed</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-secondary mb-1">100%</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Automated</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-secondary mb-1">0</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Paperwork</p>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const AlertsView = () => {
+const AdminDashboard = ({ onSwitchToUser }: { onSwitchToUser?: () => void }) => {
+  const { systemEvents } = useFirebase();
+  const [activeAdminTab, setActiveAdminTab] = useState<'overview' | 'claims' | 'fraud' | 'simulator' | 'metrics' | 'settings'>('overview');
+
+  const stats = [
+    { label: 'Total Active Policies', value: '1.24M', change: '+2.4%', icon: BarChart3, color: 'primary' },
+    { label: 'Total Payouts Today', value: '₹842.2k', change: 'Optimal', icon: Zap, color: 'secondary' },
+    { label: 'Fraud Alert Rate', value: '0.82%', change: '+0.1%', icon: ShieldAlert, color: 'error' },
+    { label: 'Avg. Loss Ratio', value: '64.5%', change: 'Optimal', icon: TrendingUp, color: 'primary' },
+  ];
+
+  const claims = [
+    { id: '#CLM-882-991', holder: 'Marcus Thorne', tier: 'Platinum Executive', type: 'Flight Delay (4h+)', amount: '₹1,250.00', score: 94, status: 'Review' },
+    { id: '#CLM-901-442', holder: 'Elena Rodriguez', tier: 'Standard Plus', type: 'Baggage Loss', amount: '₹3,400.00', score: 62, status: 'Flag Risk' },
+    { id: '#CLM-776-012', holder: 'David Chen', tier: 'Global Voyager', type: 'Personal Injury', amount: '₹12,800.00', score: 88, status: 'Review' },
+  ];
+
+  return (
+    <div className="flex min-h-screen bg-surface">
+      {/* Sidebar */}
+      <aside className="hidden lg:flex w-64 flex-col bg-surface-container-high border-r border-outline-variant/10 py-8 sticky top-0 h-screen">
+        <div className="px-8 mb-12">
+          <h1 className="font-headline font-black text-xl tracking-tighter text-primary">SURELY ADMIN</h1>
+        </div>
+        <nav className="flex-grow space-y-1 overflow-y-auto">
+          {[
+            { id: 'overview', icon: Home, label: 'Overview' },
+            { id: 'claims', icon: History, label: 'Claims Queue' },
+            { id: 'fraud', icon: ShieldAlert, label: 'Fraud Engine' },
+            { id: 'simulator', icon: Cpu, label: 'Risk Simulator' },
+            { id: 'metrics', icon: BarChart3, label: 'System Metrics' },
+            { id: 'settings', icon: Settings, label: 'Settings' },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveAdminTab(item.id as any)}
+              className={cn(
+                "w-full flex items-center gap-3 px-8 py-4 text-sm font-bold transition-all border-l-4",
+                activeAdminTab === item.id 
+                  ? "bg-white text-primary border-primary" 
+                  : "text-outline hover:bg-white/50 border-transparent"
+              )}
+            >
+              <item.icon className="w-5 h-5" />
+              {item.label}
+            </button>
+          ))}
+        </nav>
+        <div className="px-8 mt-auto pt-8">
+          <Button 
+            variant="outline" 
+            className="w-full text-[10px] font-black uppercase tracking-widest py-4 border-primary/20 text-primary hover:bg-primary/5"
+            onClick={onSwitchToUser}
+          >
+            Switch to User View
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-grow flex flex-col">
+        <header className="bg-white border-b border-outline-variant/10 px-8 py-4 flex justify-between items-center sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button 
+              className="lg:hidden p-2 hover:bg-surface-container-high rounded-full"
+              onClick={onSwitchToUser}
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <p className="text-[10px] font-bold text-secondary uppercase tracking-widest mb-1">System Operational • Admin Mode</p>
+              <h2 className="font-headline font-bold text-primary text-xl capitalize">{activeAdminTab} Dashboard</h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full border border-outline-variant/10">
+              <div className="w-2 h-2 bg-secondary rounded-full animate-pulse"></div>
+              <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Network Live</span>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold text-xs">AD</div>
+          </div>
+        </header>
+
+        <main className="p-8 flex-grow overflow-y-auto">
+          {activeAdminTab === 'overview' ? (
+            <div className="space-y-8">
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, i) => (
+              <div key={i} className={cn(
+                "bg-white p-6 rounded-2xl border border-outline-variant/10 shadow-sm relative overflow-hidden group",
+                stat.color === 'error' && "border-b-2 border-b-error",
+                stat.color === 'primary' && i === 0 && "border-b-2 border-b-primary"
+              )}>
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-[10px] font-black text-outline uppercase tracking-widest">{stat.label}</span>
+                  <stat.icon className={cn("w-5 h-5", `text-${stat.color}/40`)} />
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-2xl font-headline font-black text-primary tabular-nums">{stat.value}</h3>
+                  <span className={cn("text-[10px] font-bold", stat.color === 'error' ? "text-error" : "text-secondary")}>{stat.change}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-12 gap-8">
+            {/* Map Section */}
+            <div className="col-span-12 lg:col-span-8 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-headline font-bold text-primary flex items-center gap-2">
+                  <Globe className="w-5 h-5" />
+                  Live Risk Map
+                </h3>
+                <div className="flex gap-2">
+                  <span className="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-primary tracking-tighter">NORTH AMERICA</span>
+                  <span className="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-primary tracking-tighter">REAL-TIME FEED</span>
+                </div>
+              </div>
+              <div className="h-[400px] rounded-[2.5rem] overflow-hidden border border-outline-variant/10 shadow-sm relative">
+                <RiskMap activeEvent={systemEvents[0]} />
+                
+                {/* Floating Overlay */}
+                <div className="absolute top-4 right-4 z-[1000] bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-outline-variant/15 w-64 space-y-3 shadow-xl">
+                  <p className="text-[10px] font-black uppercase text-primary tracking-widest">Active Disruption Zones</p>
+                  <div className="space-y-3">
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold">Zone 7A (Storm Front)</span>
+                        <span className="w-2 h-2 rounded-full bg-error"></span>
+                      </div>
+                      <div className="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+                        <div className="bg-error h-full w-[85%]"></div>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold">Zone 12 (Strike Action)</span>
+                        <span className="w-2 h-2 rounded-full bg-warning"></span>
+                      </div>
+                      <div className="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+                        <div className="bg-warning h-full w-[40%]"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Fraud Insights */}
+            <div className="col-span-12 lg:col-span-4 space-y-4">
+              <h3 className="font-headline font-bold text-primary flex items-center gap-2">
+                <BrainCircuit className="w-5 h-5" />
+                Fraud Insights
+              </h3>
+              <div className="bg-surface-container-high rounded-[2.5rem] p-8 h-[400px] flex flex-col justify-between border border-outline-variant/10">
+                <div className="space-y-4">
+                  <p className="text-sm text-on-surface-variant leading-relaxed">
+                    AI has detected a <span className="font-bold text-primary">high-density cluster</span> of claims originating from localized IP ranges in Zone 4C.
+                  </p>
+                  <div className="p-4 bg-white rounded-2xl border border-outline-variant/10 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold text-error uppercase tracking-widest">Anomalous Spike</span>
+                      <span className="text-[10px] font-bold text-outline tabular-nums">14:22 UTC</span>
+                    </div>
+                    <div className="text-3xl font-black text-primary">+142%</div>
+                    <p className="text-[10px] text-on-surface-variant mt-1 font-bold uppercase tracking-widest">Claim volume vs Baseline</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap gap-2">
+                    {['IP-MASQUERADING', 'VELOCITY-CLAIM', 'ZONE-HACKING'].map(tag => (
+                      <span key={tag} className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[8px] font-black tracking-widest">{tag}</span>
+                    ))}
+                  </div>
+                  <Button className="w-full py-4 rounded-xl font-bold text-xs uppercase tracking-widest">Launch Full Investigation</Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Claims Queue */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-headline font-bold text-primary flex items-center gap-2">
+                <History className="w-5 h-5" />
+                Recent Claims Queue
+              </h3>
+              <span className="text-[10px] font-bold text-outline uppercase tracking-widest italic">Showing 3 of 145 pending verification</span>
+            </div>
+            <div className="bg-white rounded-[2.5rem] border border-outline-variant/10 shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-container-low/50">
+                    <th className="px-8 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Policy Holder</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Claim ID</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Incident Type</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Amount</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Verification Score</th>
+                    <th className="px-8 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-outline-variant/5">
+                  {claims.map((claim, i) => (
+                    <tr key={i} className="hover:bg-surface-container-lowest transition-colors group">
+                      <td className="px-8 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary">
+                            <UserIcon className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-primary">{claim.holder}</p>
+                            <p className="text-[8px] font-bold text-outline uppercase tracking-widest">Tier: {claim.tier}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-4 font-mono text-[10px] text-outline font-bold">{claim.id}</td>
+                      <td className="px-8 py-4 text-xs font-bold text-primary">{claim.type}</td>
+                      <td className="px-8 py-4 font-headline font-bold text-primary tabular-nums">{claim.amount}</td>
+                      <td className="px-8 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 bg-surface-container h-1.5 rounded-full overflow-hidden">
+                            <div className={cn("h-full", claim.score > 80 ? "bg-secondary" : "bg-warning")} style={{ width: `${claim.score}%` }}></div>
+                          </div>
+                          <span className={cn("text-[10px] font-black tabular-nums", claim.score > 80 ? "text-secondary" : "text-warning")}>{claim.score}%</span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-4">
+                        <button className={cn("text-[10px] font-black uppercase tracking-widest hover:underline", claim.status === 'Flag Risk' ? "text-error" : "text-primary")}>
+                          {claim.status}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center h-full py-20 text-center">
+              <div className="w-20 h-20 bg-surface-container-high rounded-full flex items-center justify-center mb-6">
+                <Cpu className="w-10 h-10 text-outline/30 animate-pulse" />
+              </div>
+              <h3 className="font-headline font-bold text-primary text-2xl mb-2 capitalize">{activeAdminTab} Interface</h3>
+              <p className="text-on-surface-variant max-w-md mx-auto">
+                This module is currently processing real-time data streams. Full interface will be available shortly.
+              </p>
+              <Button 
+                variant="outline" 
+                className="mt-8"
+                onClick={() => setActiveAdminTab('overview')}
+              >
+                Return to Overview
+              </Button>
+            </div>
+          )}
+        </main>
+
+        {/* Footer */}
+        <footer className="px-8 py-6 flex justify-between items-center border-t border-outline-variant/10 bg-white">
+          <div className="flex items-center gap-4 text-[8px] font-black text-outline uppercase tracking-widest">
+            <span>© 2024 SurelyAI Technologies</span>
+            <div className="w-1 h-1 bg-outline/20 rounded-full"></div>
+            <div className="flex items-center gap-1">
+              <div className="w-1.5 h-1.5 bg-secondary rounded-full"></div>
+              Engine: V4.2-Luminous
+            </div>
+          </div>
+          <div className="flex gap-6 text-[8px] font-black text-outline uppercase tracking-widest">
+            <a href="#" className="hover:text-primary">API Status</a>
+            <a href="#" className="hover:text-primary">Incident Logs</a>
+            <a href="#" className="hover:text-primary">Node Clusters</a>
+          </div>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+const AlertsView = ({ onBack }: { onBack: () => void }) => {
   const { systemEvents } = useFirebase();
   return (
     <div className="space-y-8">
-      <header>
-        <h2 className="font-headline font-extrabold text-3xl text-primary">Safety Alerts</h2>
-        <p className="text-on-surface-variant">Real-time notifications for your active zones.</p>
+      <header className="flex items-center gap-4">
+        <button 
+          onClick={onBack}
+          className="p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div>
+          <h2 className="font-headline font-extrabold text-3xl text-primary">Safety Alerts</h2>
+          <p className="text-on-surface-variant">Real-time notifications for your active zones.</p>
+        </div>
       </header>
       <div className="space-y-4">
         {systemEvents.map(e => (
@@ -1144,7 +1586,7 @@ const AlertsView = () => {
   );
 };
 
-const ProfileView = () => {
+const ProfileView = ({ onBack }: { onBack: () => void }) => {
   const { user, profile, updateProfile, logout } = useFirebase();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(profile?.fullName || '');
@@ -1156,7 +1598,13 @@ const ProfileView = () => {
 
   return (
     <div className="max-w-2xl mx-auto space-y-12">
-      <header className="flex flex-col items-center text-center">
+      <header className="flex flex-col items-center text-center relative">
+        <button 
+          onClick={onBack}
+          className="absolute left-0 top-0 p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
         <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden border-4 border-white shadow-xl mb-6 bg-surface-container-high flex items-center justify-center">
           {user?.photoURL ? (
             <img src={user.photoURL} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -1230,19 +1678,42 @@ const ProfileView = () => {
 // --- Main App Wrapper ---
 
 const MainApp = () => {
+  const { user, profile } = useFirebase();
   const [activeTab, setActiveTab] = useState<'home' | 'claims' | 'explain' | 'alerts' | 'profile'>('home');
-  const { user } = useFirebase();
+  const [isAdminView, setIsAdminView] = useState(profile?.role === 'ADMIN');
+
+  const isAdmin = profile?.role === 'ADMIN';
+
+  if (isAdminView) {
+    return <AdminDashboard onSwitchToUser={() => setIsAdminView(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-surface pb-24">
       <header className="bg-surface sticky top-0 z-40 px-6 py-4 flex justify-between items-center max-w-7xl mx-auto border-b border-outline-variant/10">
         <div className="flex items-center gap-3">
+          {activeTab !== 'home' && (
+            <button 
+              onClick={() => setActiveTab('home')}
+              className="p-2 hover:bg-surface-container-high rounded-full transition-colors text-outline hover:text-primary mr-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
           <div className="w-10 h-10 premium-gradient rounded-lg flex items-center justify-center">
             <ShieldCheck className="text-white w-6 h-6" />
           </div>
           <h1 className="text-xl font-extrabold tracking-tighter text-primary font-headline">SURELY.<span className="text-secondary">AI</span></h1>
         </div>
         <div className="flex items-center gap-4">
+          {isAdmin && (
+            <button 
+              onClick={() => setIsAdminView(true)}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all bg-surface-container-high text-outline hover:text-primary"
+            >
+              Switch to Admin
+            </button>
+          )}
           <div className="hidden md:flex items-center gap-2 bg-surface-container-high px-3 py-1.5 rounded-full">
             <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Live Monitoring</span>
@@ -1267,35 +1738,37 @@ const MainApp = () => {
             transition={{ duration: 0.2 }}
           >
             {activeTab === 'home' && <HomeView />}
-            {activeTab === 'claims' && <ClaimsView />}
-            {activeTab === 'explain' && <ExplainView />}
-            {activeTab === 'alerts' && <AlertsView />}
-            {activeTab === 'profile' && <ProfileView />}
+            {activeTab === 'claims' && <ClaimsView onBack={() => setActiveTab('home')} />}
+            {activeTab === 'explain' && <ExplainView onBack={() => setActiveTab('home')} />}
+            {activeTab === 'alerts' && <AlertsView onBack={() => setActiveTab('home')} />}
+            {activeTab === 'profile' && <ProfileView onBack={() => setActiveTab('home')} />}
           </motion.div>
         </AnimatePresence>
       </main>
 
-      <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-8 pt-2 bg-white/80 backdrop-blur-md z-50 rounded-t-[2.5rem] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] border-t border-outline-variant/10">
-        {[
-          { id: 'home', icon: Home, label: 'Home' },
-          { id: 'claims', icon: History, label: 'Claims' },
-          { id: 'explain', icon: BrainCircuit, label: 'Explain' },
-          { id: 'alerts', icon: Bell, label: 'Alerts' },
-          { id: 'profile', icon: UserIcon, label: 'Profile' },
-        ].map((tab) => (
-          <button 
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={cn(
-              "flex flex-col items-center justify-center py-2 px-4 rounded-2xl transition-all duration-300",
-              activeTab === tab.id ? "text-primary bg-surface-container-high scale-110" : "text-outline hover:text-primary"
-            )}
-          >
-            <tab.icon className={cn("w-6 h-6", activeTab === tab.id && "fill-primary/10")} />
-            <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">{tab.label}</span>
-          </button>
-        ))}
-      </nav>
+      {!isAdminView && (
+        <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-8 pt-2 bg-white/80 backdrop-blur-md z-50 rounded-t-[2.5rem] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] border-t border-outline-variant/10">
+          {[
+            { id: 'home', icon: Home, label: 'Home' },
+            { id: 'claims', icon: History, label: 'Claims' },
+            { id: 'explain', icon: BrainCircuit, label: 'Explain' },
+            { id: 'alerts', icon: Bell, label: 'Alerts' },
+            { id: 'profile', icon: UserIcon, label: 'Profile' },
+          ].map((tab) => (
+            <button 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={cn(
+                "flex flex-col items-center justify-center py-2 px-4 rounded-2xl transition-all duration-300",
+                activeTab === tab.id ? "text-primary bg-surface-container-high scale-110" : "text-outline hover:text-primary"
+              )}
+            >
+              <tab.icon className={cn("w-6 h-6", activeTab === tab.id && "fill-primary/10")} />
+              <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">{tab.label}</span>
+            </button>
+          ))}
+        </nav>
+      )}
     </div>
   );
 };
@@ -1306,6 +1779,8 @@ export default function App() {
   const { user, profile, loading, isAuthReady, logout } = useFirebase();
   const [showLanding, setShowLanding] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState<'profile' | 'persona' | 'location' | 'problems' | 'connect' | 'complete'>('profile');
+
+  const isAdmin = profile?.role === 'ADMIN';
 
   if (!isAuthReady || (user && loading)) {
     return (
@@ -1331,7 +1806,7 @@ export default function App() {
               <OnboardingLogin onBack={() => setShowLanding(true)} />
             </motion.div>
           )
-        ) : (!profile || onboardingStep !== 'complete') ? (
+        ) : (!profile || (onboardingStep !== 'complete' && !isAdmin)) ? (
           <motion.div key="onboarding" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             {onboardingStep === 'profile' && (
               <OnboardingProfile onNext={() => setOnboardingStep('persona')} onBack={logout} />
