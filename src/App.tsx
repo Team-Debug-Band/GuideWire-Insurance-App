@@ -1318,10 +1318,106 @@ const workerClaimStatusPresentation = (raw?: string): { label: string; badgeClas
   return { label: 'CREATED', badgeClass: 'bg-amber-50 text-amber-700 border-amber-200' };
 };
 
+const WorkerClaimExplanationPanel = ({
+  claim,
+  onBack,
+  backLabel = 'Back',
+}: {
+  claim: WorkerClaimRow;
+  onBack: () => void;
+  backLabel?: string;
+}) => {
+  const rb = claim.explanation?.risk_breakdown;
+  const pb = claim.explanation?.payout_breakdown;
+  const { label, badgeClass } = workerClaimStatusPresentation(pb?.claim_status || claim.status);
+  const summary = buildWorkerClaimHumanSummary(claim);
+  const decisionPlain = simplifyPayoutDecision(pb?.decision_reason);
+
+  const fmtMoney = (n: number | undefined) =>
+    n === undefined || Number.isNaN(n) ? '—' : `₹${Number(n).toFixed(2)}`;
+
+  const expected = rb?.expected_daily_income;
+  const actual = rb?.actual_income;
+  const loss = rb?.loss ?? claim.amount;
+
+  const contextLine =
+    expected != null && actual != null
+      ? `On this day you would usually earn about ${fmtMoney(expected)}, but only ${fmtMoney(actual)} came through—a gap of ${fmtMoney(Number(loss))}.`
+      : null;
+
+  return (
+    <div className="space-y-8 max-w-3xl mx-auto">
+      <header className="flex items-center gap-4">
+        <button
+          type="button"
+          onClick={onBack}
+          className="p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <div>
+          <h2 className="font-headline font-extrabold text-3xl text-primary">Why this claim</h2>
+          <p className="text-on-surface-variant text-sm">{claim.event_type ?? 'Claim'} · #{String(claim.id ?? '—')}</p>
+        </div>
+      </header>
+
+      <div className="bg-surface-container-lowest rounded-[2.5rem] border border-outline-variant/10 p-6 md:p-8 space-y-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <span
+            className={cn(
+              'inline-flex px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border',
+              badgeClass
+            )}
+          >
+            {label}
+          </span>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-white border border-outline-variant/10 shadow-sm">
+          <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-2">In plain language</p>
+          <p className="text-on-surface font-medium leading-relaxed text-base">{summary}</p>
+          {contextLine && <p className="text-on-surface-variant text-sm leading-relaxed mt-4">{contextLine}</p>}
+        </div>
+
+        <div>
+          <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-3 px-1">The numbers</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="p-5 rounded-2xl bg-white border border-outline-variant/10">
+              <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-2">Expected income</p>
+              <p className="font-headline font-black text-primary text-lg tabular-nums">{fmtMoney(expected)}</p>
+              <p className="text-[10px] text-on-surface-variant mt-1">Typical daily earnings</p>
+            </div>
+            <div className="p-5 rounded-2xl bg-white border border-outline-variant/10">
+              <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-2">Actual income</p>
+              <p className="font-headline font-black text-primary text-lg tabular-nums">{fmtMoney(actual)}</p>
+              <p className="text-[10px] text-on-surface-variant mt-1">What you made that day</p>
+            </div>
+            <div className="p-5 rounded-2xl bg-white border border-outline-variant/10">
+              <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-2">Loss</p>
+              <p className="font-headline font-black text-primary text-lg tabular-nums">{fmtMoney(Number(loss))}</p>
+              <p className="text-[10px] text-on-surface-variant mt-1">Shortfall vs expected</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-2xl bg-primary/5 border border-primary/10">
+          <p className="text-[10px] font-black text-primary/80 uppercase tracking-widest mb-2">Reason for payout</p>
+          <p className="text-sm font-bold text-primary leading-relaxed">{decisionPlain}</p>
+        </div>
+
+        <Button type="button" variant="outline" className="w-full py-4" onClick={onBack}>
+          {backLabel}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const ClaimsView = ({ onBack }: { onBack: () => void }) => {
   const [rows, setRows] = useState<WorkerClaimRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selected, setSelected] = useState<WorkerClaimRow | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -1342,10 +1438,21 @@ const ClaimsView = ({ onBack }: { onBack: () => void }) => {
     };
   }, []);
 
+  if (selected) {
+    return (
+      <WorkerClaimExplanationPanel
+        claim={selected}
+        onBack={() => setSelected(null)}
+        backLabel="Back to claims"
+      />
+    );
+  }
+
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <header className="flex items-center gap-4">
         <button
+          type="button"
           onClick={onBack}
           className="p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
         >
@@ -1353,7 +1460,7 @@ const ClaimsView = ({ onBack }: { onBack: () => void }) => {
         </button>
         <div>
           <h2 className="font-headline font-extrabold text-3xl text-primary">Claims history</h2>
-          <p className="text-on-surface-variant text-sm">Parametric claims from your coverage.</p>
+          <p className="text-on-surface-variant text-sm">Tap a claim to see a plain-language explanation.</p>
         </div>
       </header>
 
@@ -1383,28 +1490,32 @@ const ClaimsView = ({ onBack }: { onBack: () => void }) => {
               const { label, badgeClass } = workerClaimStatusPresentation(claim.status);
               const amount = Number(claim.amount ?? 0);
               return (
-                <li
-                  key={String(claim.id ?? `${claim.event_type}-${amount}-${label}`)}
-                  className="flex flex-wrap items-center justify-between gap-4 p-5 bg-white rounded-2xl border border-outline-variant/10 shadow-sm"
-                >
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Event</p>
-                    <p className="text-sm font-bold text-primary truncate">{claim.event_type ?? '—'}</p>
-                  </div>
-                  <div className="text-right sm:text-left sm:min-w-[100px]">
-                    <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Amount</p>
-                    <p className="font-headline font-black text-primary tabular-nums">₹{amount.toFixed(2)}</p>
-                  </div>
-                  <div className="w-full sm:w-auto sm:shrink-0 flex sm:justify-end">
-                    <span
-                      className={cn(
-                        'inline-flex px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border',
-                        badgeClass
-                      )}
-                    >
-                      {label}
-                    </span>
-                  </div>
+                <li key={String(claim.id ?? `${claim.event_type}-${amount}-${label}`)}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(claim)}
+                    className="w-full flex flex-wrap items-center justify-between gap-4 p-5 bg-white rounded-2xl border border-outline-variant/10 shadow-sm text-left hover:border-primary/20 hover:shadow-md transition-all group"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Event</p>
+                      <p className="text-sm font-bold text-primary truncate">{claim.event_type ?? '—'}</p>
+                    </div>
+                    <div className="text-right sm:text-left sm:min-w-[100px]">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1">Amount</p>
+                      <p className="font-headline font-black text-primary tabular-nums">₹{amount.toFixed(2)}</p>
+                    </div>
+                    <div className="flex items-center gap-2 w-full sm:w-auto sm:shrink-0 justify-between sm:justify-end">
+                      <span
+                        className={cn(
+                          'inline-flex px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border',
+                          badgeClass
+                        )}
+                      >
+                        {label}
+                      </span>
+                      <ChevronRight className="w-5 h-5 text-outline/40 group-hover:text-primary transition-colors shrink-0" />
+                    </div>
+                  </button>
                 </li>
               );
             })}
@@ -1416,58 +1527,107 @@ const ClaimsView = ({ onBack }: { onBack: () => void }) => {
 };
 
 const ExplainView = ({ onBack }: { onBack: () => void }) => {
-  const { payouts } = useFirebase();
-  const lastPayout = payouts[0];
+  const [rows, setRows] = useState<WorkerClaimRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<WorkerClaimRow | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    getWorkerClaims()
+      .then((data: WorkerClaimRow[]) => {
+        if (!cancelled) setRows(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (!cancelled) setRows([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (selected) {
+    return (
+      <WorkerClaimExplanationPanel
+        claim={selected}
+        onBack={() => setSelected(null)}
+        backLabel="Back to explain"
+      />
+    );
+  }
 
   return (
     <div className="space-y-12 max-w-4xl mx-auto">
-      <header className="flex flex-col items-center text-center relative">
+      <header className="flex flex-col items-center text-center relative px-4">
         <button
+          type="button"
           onClick={onBack}
           className="absolute left-0 top-0 p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h2 className="font-headline font-extrabold text-4xl text-primary mb-4">How it Works</h2>
-        <p className="text-on-surface-variant">Understanding the Surely.AI Parametric Protocol.</p>
+        <h2 className="font-headline font-extrabold text-4xl text-primary mb-4">Explain</h2>
+        <p className="text-on-surface-variant max-w-lg">
+          Plain-language breakdowns of your parametric claims. Tap any claim to see expected income, what you actually earned, the loss, and why a payout was or was not approved.
+        </p>
       </header>
 
-      {lastPayout && (
-        <div className="bg-secondary/5 border-2 border-secondary/20 p-8 rounded-[2.5rem] relative overflow-hidden">
-          <div className="absolute top-4 right-8">
-            <Zap className="text-secondary w-12 h-12 opacity-20" />
+      <div className="bg-surface-container-lowest rounded-[2.5rem] border border-outline-variant/10 p-6 md:p-8 max-w-3xl mx-auto">
+        <h3 className="font-headline font-bold text-primary mb-4 flex items-center gap-2">
+          <MessageSquare className="w-5 h-5 text-secondary" />
+          Your claims
+        </h3>
+        {loading && (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
-          <h3 className="font-headline font-bold text-secondary mb-4 uppercase tracking-widest text-xs">Latest Payout Analysis</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <p className="text-primary font-headline font-bold text-2xl mb-2">₹{lastPayout.amount.toFixed(2)} Disbursed</p>
-              <p className="text-on-surface-variant text-sm leading-relaxed">
-                Triggered by <span className="font-bold text-primary">{lastPayout.eventType}</span> in your specific zone.
-              </p>
-              <div className="mt-4 p-4 bg-white/50 rounded-xl border border-secondary/10">
-                <p className="text-[10px] font-black uppercase text-secondary tracking-widest mb-1">Exact Reason for Payout</p>
-                <p className="text-xs font-bold text-primary leading-relaxed">
-                  {lastPayout.eventType === 'Rainfall'
-                    ? "Local sensors detected rainfall exceeding 2.5mm/hr for a continuous period of 32 minutes, meeting the parametric threshold for delivery disruption."
-                    : "Platform API heartbeat failed for 18 consecutive minutes, triggering the operational downtime protection clause."}
-                </p>
-              </div>
-            </div>
-            <div className="bg-white p-4 rounded-2xl border border-secondary/10 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold text-outline uppercase tracking-widest">Trigger Condition</span>
-                <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Met</span>
-              </div>
-              <p className="text-xs font-bold text-primary">
-                {lastPayout.eventType.includes('Rain') ? "Rainfall > 2.5mm/hr for 30+ mins" : "Platform Downtime > 15m"}
-              </p>
-              <div className="w-full h-1.5 bg-surface-container rounded-full mt-3 overflow-hidden">
-                <div className="w-full h-full bg-secondary"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
+        {!loading && rows.length === 0 && (
+          <p className="text-sm text-on-surface-variant text-center py-8">
+            No claims from the server yet. Run a simulation from the admin tools, then open this tab again.
+          </p>
+        )}
+        {!loading && rows.length > 0 && (
+          <ul className="space-y-3">
+            {rows.map((claim) => {
+              const { label, badgeClass } = workerClaimStatusPresentation(claim.status);
+              const amount = Number(claim.amount ?? 0);
+              const preview = buildWorkerClaimHumanSummary(claim);
+              return (
+                <li key={String(claim.id ?? `${claim.event_type}-${amount}`)}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(claim)}
+                    className="w-full text-left p-5 rounded-2xl bg-white border border-outline-variant/10 shadow-sm hover:border-primary/20 transition-all group"
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
+                      <span className="text-sm font-bold text-primary">{claim.event_type ?? 'Claim'}</span>
+                      <span
+                        className={cn(
+                          'inline-flex px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border',
+                          badgeClass
+                        )}
+                      >
+                        {label}
+                      </span>
+                    </div>
+                    <p className="text-sm text-on-surface-variant leading-snug line-clamp-2 mb-2">{preview}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-headline font-black text-primary tabular-nums">₹{amount.toFixed(2)}</span>
+                      <span className="text-[10px] font-black text-outline uppercase tracking-widest flex items-center gap-1 group-hover:text-primary">
+                        Full explanation <ChevronRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
       <div className="space-y-8">
         <div className="bg-surface-container-low p-8 rounded-[2.5rem] border border-outline-variant/10">
