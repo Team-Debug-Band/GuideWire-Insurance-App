@@ -2447,9 +2447,19 @@ const ProfileView = ({ onBack }: { onBack: () => void }) => {
 
 // --- Main App Wrapper ---
 
+type WorkerTab = 'home' | 'claims' | 'explain' | 'alerts';
+
+const WORKER_BOTTOM_TABS: { id: WorkerTab; icon: typeof Home; label: string }[] = [
+  { id: 'home', icon: Home, label: 'Home' },
+  { id: 'claims', icon: History, label: 'Claims' },
+  { id: 'explain', icon: BrainCircuit, label: 'Explain' },
+  { id: 'alerts', icon: Bell, label: 'Alerts' },
+];
+
 const MainApp = () => {
   const { user, profile } = useFirebase();
-  const [activeTab, setActiveTab] = useState<'home' | 'claims' | 'explain' | 'alerts' | 'profile'>('home');
+  const [activeTab, setActiveTab] = useState<WorkerTab>('home');
+  const [profileOpen, setProfileOpen] = useState(false);
   const [isAdminView, setIsAdminView] = useState(profile?.role === 'ADMIN');
 
   const isAdmin = profile?.role === 'ADMIN';
@@ -2458,13 +2468,20 @@ const MainApp = () => {
     return <AdminDashboard onSwitchToUser={() => setIsAdminView(false)} />;
   }
 
+  const headerBackVisible = profileOpen || activeTab !== 'home';
+  const handleHeaderBack = () => {
+    if (profileOpen) setProfileOpen(false);
+    else setActiveTab('home');
+  };
+
   return (
     <div className="min-h-screen bg-surface pb-24">
       <header className="bg-surface sticky top-0 z-40 px-6 py-4 flex justify-between items-center max-w-7xl mx-auto border-b border-outline-variant/10">
         <div className="flex items-center gap-3">
-          {activeTab !== 'home' && (
+          {headerBackVisible && (
             <button
-              onClick={() => setActiveTab('home')}
+              type="button"
+              onClick={handleHeaderBack}
               className="p-2 hover:bg-surface-container-high rounded-full transition-colors text-outline hover:text-primary mr-2"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -2488,55 +2505,69 @@ const MainApp = () => {
             <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
             <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Live Monitoring</span>
           </div>
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high bg-surface-container flex items-center justify-center">
+          <button
+            type="button"
+            onClick={() => setProfileOpen(true)}
+            className="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high bg-surface-container flex items-center justify-center hover:ring-2 hover:ring-primary/20 transition-shadow"
+            aria-label="Open profile"
+          >
             {user?.photoURL ? (
-              <img src={user.photoURL} alt="Profile" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+              <img src={user.photoURL} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
             ) : (
               <UserIcon className="w-5 h-5 text-outline" />
             )}
-          </div>
+          </button>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         <AnimatePresence mode="wait">
           <motion.div
-            key={activeTab}
+            key={profileOpen ? 'profile' : activeTab}
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -10 }}
             transition={{ duration: 0.2 }}
           >
-            {activeTab === 'home' && <HomeView />}
-            {activeTab === 'claims' && <ClaimsView onBack={() => setActiveTab('home')} />}
-            {activeTab === 'explain' && <ExplainView onBack={() => setActiveTab('home')} />}
-            {activeTab === 'alerts' && <AlertsView onBack={() => setActiveTab('home')} />}
-            {activeTab === 'profile' && <ProfileView onBack={() => setActiveTab('home')} />}
+            {profileOpen ? (
+              <ProfileView onBack={() => setProfileOpen(false)} />
+            ) : (
+              <>
+                {activeTab === 'home' && <HomeView />}
+                {activeTab === 'claims' && <ClaimsView onBack={() => setActiveTab('home')} />}
+                {activeTab === 'explain' && <ExplainView onBack={() => setActiveTab('home')} />}
+                {activeTab === 'alerts' && <AlertsView onBack={() => setActiveTab('home')} />}
+              </>
+            )}
           </motion.div>
         </AnimatePresence>
       </main>
 
       {!isAdminView && (
-        <nav className="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 pb-8 pt-2 bg-white/80 backdrop-blur-md z-50 rounded-t-[2.5rem] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] border-t border-outline-variant/10">
-          {[
-            { id: 'home', icon: Home, label: 'Home' },
-            { id: 'claims', icon: History, label: 'Claims' },
-            { id: 'explain', icon: BrainCircuit, label: 'Explain' },
-            { id: 'alerts', icon: Bell, label: 'Alerts' },
-            { id: 'profile', icon: UserIcon, label: 'Profile' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={cn(
-                "flex flex-col items-center justify-center py-2 px-4 rounded-2xl transition-all duration-300",
-                activeTab === tab.id ? "text-primary bg-surface-container-high scale-110" : "text-outline hover:text-primary"
-              )}
-            >
-              <tab.icon className={cn("w-6 h-6", activeTab === tab.id && "fill-primary/10")} />
-              <span className="text-[10px] font-bold mt-1 uppercase tracking-wider">{tab.label}</span>
-            </button>
-          ))}
+        <nav
+          className="fixed bottom-0 left-0 w-full flex justify-around items-center px-1 pb-8 pt-2 bg-white/80 backdrop-blur-md z-50 rounded-t-[2.5rem] shadow-[0_-8px_30px_rgba(0,0,0,0.04)] border-t border-outline-variant/10"
+          aria-label="Worker navigation"
+        >
+          {WORKER_BOTTOM_TABS.map((tab) => {
+            const isActive = !profileOpen && activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setProfileOpen(false);
+                  setActiveTab(tab.id);
+                }}
+                className={cn(
+                  'flex flex-col items-center justify-center py-2 px-3 sm:px-4 rounded-2xl transition-all duration-300 min-w-0 flex-1 max-w-[5.5rem]',
+                  isActive ? 'text-primary bg-surface-container-high scale-110 shadow-sm' : 'text-outline hover:text-primary'
+                )}
+              >
+                <tab.icon className={cn('w-6 h-6 shrink-0', isActive && 'fill-primary/10')} />
+                <span className="text-[10px] font-bold mt-1 uppercase tracking-wider truncate w-full text-center">{tab.label}</span>
+              </button>
+            );
+          })}
         </nav>
       )}
     </div>
