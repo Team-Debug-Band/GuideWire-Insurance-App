@@ -1,8 +1,17 @@
 import random
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Input models
 class EventSimulationInput(BaseModel):
@@ -178,6 +187,6 @@ def get_fraud_alerts():
         alerts.append({
             "zone": loc,
             "claim_count": count,
-            "alert_status": "HIGH" if count > 3 else "NORMAL"
+            "alert_status": "HIGH RISK" if count > 2 else "NORMAL"
         })
     return alerts
