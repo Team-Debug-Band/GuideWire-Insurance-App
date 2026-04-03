@@ -1240,11 +1240,71 @@ const HomeView = () => {
   );
 };
 
+type WorkerClaimRiskBreakdown = {
+  event_type?: string;
+  severity?: number;
+  expected_daily_income?: number;
+  actual_income?: number;
+  loss?: number;
+};
+
+type WorkerClaimPayoutBreakdown = {
+  claim_status?: string;
+  payout_amount?: number;
+  decision_reason?: string;
+};
+
+type WorkerClaimExplanation = {
+  risk_breakdown?: WorkerClaimRiskBreakdown;
+  payout_breakdown?: WorkerClaimPayoutBreakdown;
+  fraud_breakdown?: { fraud_score?: number; reasons?: string[] };
+};
+
 type WorkerClaimRow = {
   id?: string | number;
   event_type?: string;
   amount?: number;
   status?: string;
+  explanation?: WorkerClaimExplanation;
+};
+
+const eventTypeToFriendlyPhrase = (eventType?: string): string => {
+  const e = (eventType || '').toUpperCase();
+  if (e === 'RAIN') return 'Heavy rain';
+  if (e === 'FLOOD') return 'Flooding';
+  if (e === 'CURFEW') return 'A curfew or restricted movement';
+  if (eventType) return eventType.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  return 'This event';
+};
+
+const simplifyPayoutDecision = (raw?: string): string => {
+  if (!raw) return 'We compared your earnings to the policy rules for this trigger.';
+  const s = raw.toLowerCase();
+  if (s.includes('automated payment successful') || s.includes('low risk')) {
+    return 'Everything lined up with your coverage, so the payout was approved automatically.';
+  }
+  if (s.includes('payout denied') || s.includes('high fraud')) {
+    return 'The review flagged higher risk, so no payout was sent for this claim.';
+  }
+  if (s.includes('manual verification') || s.includes('escalated') || s.includes('medium risk')) {
+    return 'We are double-checking this one before any money moves.';
+  }
+  return raw;
+};
+
+const buildWorkerClaimHumanSummary = (claim: WorkerClaimRow): string => {
+  const rb = claim.explanation?.risk_breakdown;
+  const pb = claim.explanation?.payout_breakdown;
+  const status = (pb?.claim_status || claim.status || '').toUpperCase();
+  const topic = eventTypeToFriendlyPhrase(rb?.event_type || claim.event_type);
+
+  if (status === 'PAID' || status === 'APPROVED') {
+    return `${topic} reduced your income, so payout was triggered.`;
+  }
+  if (status === 'REJECTED' || status === 'FLAGGED') {
+    return `${topic} affected your earnings, but this claim did not clear automated checks, so no payout was issued.`;
+  }
+  return `${topic} impacted your earnings. This claim is still under review, so no payout decision is final yet.`;
 };
 
 const workerClaimStatusPresentation = (raw?: string): { label: string; badgeClass: string } => {
