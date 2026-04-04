@@ -24,6 +24,14 @@ export const getPayouts = () => {
 };
 
 /**
+ * Dispatches a manual claim without parametric XAI triggers.
+ * @param {{ reason: string, amount: number }} payload
+ */
+export const fileManualClaim = (payload) => {
+  return api('/manual-claim', { method: 'POST', body: payload });
+};
+
+/**
  * Simulates a parametric event and auto-processes claims + payouts.
  *
  * @param {{ event_type: string, city: string, zone: string, severity: number }} payload

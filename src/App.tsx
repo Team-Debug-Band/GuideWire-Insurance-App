@@ -14,7 +14,7 @@ import {
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Button } from './components/Button';
-import { getClaims, getPayouts, simulateEvent, getFraudAlerts } from './api/claims';
+import { getClaims, getPayouts, simulateEvent, getFraudAlerts, fileManualClaim } from './api/claims';
 import { getClaims as getWorkerClaims } from './api/worker';
 import { DataPulse } from './components/DataPulse';
 import { cn } from './lib/utils';
@@ -37,8 +37,9 @@ const radarData = [
 
 // --- Sub-components ---
 
-const RiskMap = ({ location, activeEvent }: { location?: { latitude: number, longitude: number }, activeEvent?: any }) => {
+const RiskMap = ({ location, profile, activeEvent }: { location?: { latitude: number, longitude: number }, profile?: any, activeEvent?: any }) => {
   const center: [number, number] = location ? [location.latitude, location.longitude] : [12.9716, 77.5946];
+  const locString = profile?.city ? `${profile.zone}, ${profile.city}` : "Bangalore Central";
 
   return (
     <div className="w-full h-full relative">
@@ -77,7 +78,7 @@ const RiskMap = ({ location, activeEvent }: { location?: { latitude: number, lon
       <div className="absolute top-4 right-4 z-[1000] bg-white/90 backdrop-blur px-3 py-1.5 rounded-full border border-outline-variant/20 shadow-sm flex items-center gap-2">
         <MapPin className="w-3 h-3 text-primary" />
         <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
-          {location ? "Current Location Active" : "Koramangala, Bangalore"}
+          {locString}
         </span>
       </div>
     </div>
@@ -648,14 +649,22 @@ const OnboardingLogin = ({ onBack }: { onBack: () => void }) => {
           </Button>
         </form>
 
-        <Button
-          onClick={() => mockLogin('admin@surely.ai')}
-          className="w-full py-5 flex items-center justify-center gap-3 bg-primary text-white border border-primary hover:bg-primary/90"
-          size="lg"
-        >
-          <ShieldCheck className="w-5 h-5" />
-          <span>Login as Admin</span>
-        </Button>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => mockLogin('admin@surely.ai')}
+            className="w-full py-4 flex items-center justify-center gap-2 bg-primary text-white border border-primary hover:bg-primary/90"
+          >
+            <ShieldCheck className="w-5 h-5" />
+            <span className="text-xs">Admin Demo</span>
+          </Button>
+          <Button
+            onClick={() => mockLogin('user@surely.ai')}
+            className="w-full py-4 flex items-center justify-center gap-2 bg-secondary text-white border border-secondary hover:bg-secondary/90"
+          >
+            <UserIcon className="w-5 h-5" />
+            <span className="text-xs">User Demo</span>
+          </Button>
+        </div>
 
         <div className="relative py-4">
           <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-outline-variant/30"></div></div>
@@ -709,10 +718,10 @@ const OnboardingProfile = ({ onNext, onBack }: { onNext: () => void, onBack: () 
 
   return (
     <div className="min-h-screen bg-surface flex flex-col px-6 py-8 max-w-md mx-auto w-full">
-      <OnboardingHeader title="Basic Details" onBack={onBack} step={1} totalSteps={5} />
+      <OnboardingHeader title="Basic Details" onBack={onBack} step={1} totalSteps={4} />
 
       <section className="mb-8">
-        <p className="text-on-surface-variant text-sm leading-relaxed">Let's start with the basics. We need your name and primary work territory.</p>
+        <p className="text-on-surface-variant text-sm leading-relaxed">Let's start with the basics. We need your name.</p>
       </section>
 
       <div className="space-y-6 flex-grow">
@@ -724,37 +733,6 @@ const OnboardingProfile = ({ onNext, onBack }: { onNext: () => void, onBack: () 
             value={formData.fullName}
             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
           />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <label className="font-label text-[11px] font-bold uppercase tracking-wider text-outline ml-1">City</label>
-            <select
-              className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-4 text-on-surface shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={formData.city}
-              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-            >
-              <option>Bangalore</option>
-              <option>Mumbai</option>
-              <option>Delhi</option>
-              <option>New York</option>
-              <option>London</option>
-            </select>
-          </div>
-          <div className="space-y-1.5">
-            <label className="font-label text-[11px] font-bold uppercase tracking-wider text-outline ml-1">Zone</label>
-            <select
-              className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-4 text-on-surface shadow-sm focus:ring-2 focus:ring-primary/20"
-              value={formData.zone}
-              onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
-            >
-              <option>North</option>
-              <option>Central</option>
-              <option>South</option>
-              <option>East</option>
-              <option>West</option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -1416,27 +1394,44 @@ const WorkerClaimExplanationPanel = ({
 const ClaimsView = ({ onBack }: { onBack: () => void }) => {
   const [rows, setRows] = useState<WorkerClaimRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [submittingManual, setSubmittingManual] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<WorkerClaimRow | null>(null);
+  const [isManualModalOpen, setIsManualModalOpen] = useState(false);
+  const [manualForm, setManualForm] = useState({ reason: '', amount: 0 });
 
-  useEffect(() => {
-    let cancelled = false;
+  const fetchClaims = () => {
     setLoading(true);
-    setError(null);
     getWorkerClaims()
       .then((data: WorkerClaimRow[]) => {
-        if (!cancelled) setRows(Array.isArray(data) ? data : []);
+        setRows(Array.isArray(data) ? data : []);
       })
       .catch((e: Error) => {
-        if (!cancelled) setError(e.message || 'Could not load claims');
+        setError(e.message || 'Could not load claims');
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
       });
-    return () => {
-      cancelled = true;
-    };
+  };
+
+  useEffect(() => {
+    fetchClaims();
   }, []);
+
+  const handleManualClaimSubmit = async () => {
+    if (submittingManual || !manualForm.reason || manualForm.amount <= 0) return;
+    setSubmittingManual(true);
+    try {
+      await fileManualClaim(manualForm);
+      fetchClaims();
+      setIsManualModalOpen(false);
+      setManualForm({ reason: '', amount: 0 });
+    } catch (err: any) {
+      alert("Failed to submit manual claim");
+    } finally {
+      setSubmittingManual(false);
+    }
+  };
 
   if (selected) {
     return (
@@ -1449,19 +1444,67 @@ const ClaimsView = ({ onBack }: { onBack: () => void }) => {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto">
-      <header className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={onBack}
-          className="p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h2 className="font-headline font-extrabold text-3xl text-primary">Claims history</h2>
-          <p className="text-on-surface-variant text-sm">Tap a claim to see a plain-language explanation.</p>
+    <div className="space-y-8 max-w-3xl mx-auto relative">
+      {isManualModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl border border-outline-variant/10 relative">
+            <button
+              onClick={() => setIsManualModalOpen(false)}
+              className="absolute top-6 right-6 p-2 hover:bg-surface-container-low rounded-full transition-colors text-outline hover:text-primary z-10"
+            >
+              <XCircle className="w-6 h-6" />
+            </button>
+            <h3 className="font-headline font-black text-2xl text-primary mb-4">File Manual Claim</h3>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-[10px] font-black text-outline uppercase tracking-widest mb-2.5">Reason for Claim</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Accident during delivery"
+                  value={manualForm.reason}
+                  onChange={(e) => setManualForm({ ...manualForm, reason: e.target.value })}
+                  className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 text-sm font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black text-outline uppercase tracking-widest mb-2.5">Expected Amount (₹)</label>
+                <input
+                  type="number"
+                  placeholder="1500"
+                  value={manualForm.amount || ''}
+                  onChange={(e) => setManualForm({ ...manualForm, amount: Number(e.target.value) })}
+                  className="w-full bg-surface-container-low border border-outline-variant/10 rounded-xl px-4 py-3 text-sm font-bold text-primary focus:outline-none focus:ring-2 focus:ring-primary/10"
+                />
+              </div>
+            </div>
+            <Button
+              onClick={handleManualClaimSubmit}
+              disabled={submittingManual || !manualForm.reason || manualForm.amount <= 0}
+              className="w-full py-4 text-[10px] font-black uppercase tracking-widest rounded-2xl"
+            >
+              {submittingManual ? "Submitting..." : "Submit to Review"}
+            </Button>
+          </div>
         </div>
+      )}
+
+      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={onBack}
+            className="p-3 bg-surface-container-high rounded-full text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h2 className="font-headline font-extrabold text-3xl text-primary">Claims history</h2>
+            <p className="text-on-surface-variant text-sm">Tap a claim to see a plain-language explanation.</p>
+          </div>
+        </div>
+        <Button onClick={() => setIsManualModalOpen(true)} disabled={submittingManual} variant="outline" className="shrink-0 bg-white shadow-sm border-outline-variant/30 text-xs">
+          File Manual Claim
+        </Button>
       </header>
 
       <div className="bg-surface-container-lowest rounded-[2.5rem] border border-outline-variant/10 p-6 md:p-8">
@@ -1570,6 +1613,9 @@ const ExplainView = ({ onBack }: { onBack: () => void }) => {
           <ArrowLeft className="w-5 h-5" />
         </button>
         <h2 className="font-headline font-extrabold text-4xl text-primary mb-4">Explain</h2>
+        <p className="font-body text-sm text-outline mt-2 italic max-w-lg mx-auto">
+          Note: Explainable AI breakdowns are only generated for automated parametric triggers, not manual claims.
+        </p>
         <p className="text-on-surface-variant max-w-lg">
           Plain-language breakdowns of your parametric claims. Tap any claim to see expected income, what you actually earned, the loss, and why a payout was or was not approved.
         </p>
@@ -2015,7 +2061,6 @@ const AdminDashboard = ({ onSwitchToUser }: { onSwitchToUser?: () => void }) => 
                       Live Risk Map
                     </h3>
                     <div className="flex gap-2">
-                      <span className="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-primary tracking-tighter">NORTH AMERICA</span>
                       <span className="bg-surface-container-high px-3 py-1 rounded-full text-[10px] font-bold text-primary tracking-tighter">REAL-TIME FEED</span>
                     </div>
                   </div>
