@@ -14,5 +14,4 @@ pandas>=2.2.0
 razorpay
 psycopg2-binary
 pydantic
-jwt
 python-multipart
