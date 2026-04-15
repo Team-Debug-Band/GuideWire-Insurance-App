@@ -156,14 +156,23 @@ def start_weekly_cycle(db: Session = Depends(get_db), current_user: Worker = Dep
     db.refresh(cycle)
     return cycle
 
+@router.get("/me/payouts", response_model=List[PayoutResponse])
+def get_payouts(db: Session = Depends(get_db), current_user: Worker = Depends(get_current_user)):
+    # Join Payout with Claim to filter by worker_id
+    return db.query(Payout).join(Claim).filter(Claim.worker_id == current_user.id).all()
+
 @router.get("/me/dashboard", response_model=DashboardResponse)
 def get_dashboard(db: Session = Depends(get_db), current_user: Worker = Depends(get_current_user)):
     policy = db.query(Policy).filter(Policy.worker_id == current_user.id, Policy.status == PolicyStatus.ACTIVE).first()
     active_cycle = db.query(WeeklyCycle).filter(WeeklyCycle.worker_id == current_user.id, WeeklyCycle.status == CycleStatus.ACTIVE).first()
     
+    # Also fetch recent payouts for the dashboard
+    recent_payouts = db.query(Payout).join(Claim).filter(Claim.worker_id == current_user.id).order_by(Payout.id.desc()).limit(5).all()
+    
     return DashboardResponse(
         worker=current_user,
         platforms=current_user.platforms,
         policy=policy,
-        active_cycle=active_cycle
+        active_cycle=active_cycle,
+        recent_payouts=recent_payouts
     )

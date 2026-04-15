@@ -2,6 +2,7 @@ import json
 import os
 import joblib
 import numpy as np
+import pandas as pd
 from pathlib import Path
 
 MODEL_PATH = Path(__file__).parent.parent / "ml" / "risk_model.pkl"
@@ -39,47 +40,70 @@ def compute_weekly_premium(worker_features: dict) -> dict:
       city_risk (float), season_risk (float), forecast_risk (float),
       income_volatility (float), platform_count (int),
       weeks_active (int), persona_type (int: 0=FOOD,1=GROCERY,2=ECOMMERCE)
-
-    Returns dict with:
-      weekly_premium (float, rounded to 2dp)
-      risk_score (float, 0-1 normalised)
-      xai_breakdown (list of dicts sorted by contribution desc):
-        [{"feature": str, "label": str, "contribution": float, "direction": "increase"|"decrease"}, ...]
     """
     model, feature_importances = _load_model()
 
     feature_order = ["city_risk", "season_risk", "forecast_risk",
                      "income_volatility", "platform_count", "weeks_active", "persona_type"]
 
-    X = np.array([[worker_features[f] for f in feature_order]])
-    predicted_premium = float(model.predict(X)[0])
+    # Use a DataFrame to avoid UserWarning about feature names
+    X_df = pd.DataFrame([worker_features], columns=feature_order)
+    
+    predicted_premium = float(model.predict(X_df)[0])
     predicted_premium = round(max(50.0, min(180.0, predicted_premium)), 2)
 
-    # Derive normalised risk_score from premium: (premium - 50) / 130
+    # Risk score calculation
     risk_score = round((predicted_premium - 50) / 130, 4)
 
-    # Build XAI breakdown from feature importances × feature value (normalised)
+    # Advanced Insight: Impact Calculation
+    # We compare the current feature value to the "average" value used in training
+    # and weight it by the model's feature importance.
+    
+    averages = {
+        "city_risk": 0.625, "season_risk": 0.55,
+        "forecast_risk": 0.50, "income_volatility": 0.45,
+        "platform_count": 2, "weeks_active": 26, "persona_type": 1
+    }
+    
     breakdown = []
     for feat, importance in feature_importances.items():
         val = worker_features.get(feat, 0)
-        # Normalise val to 0-1 range per feature
+        avg_val = averages.get(feat, 0)
+        
+        # Calculate how much this feature deviates from the "norm"
+        # and how much that deviation matters based on importance.
         norm_ranges = {
             "city_risk": (0.3, 0.9), "season_risk": (0.2, 1.0),
             "forecast_risk": (0.0, 1.0), "income_volatility": (0.1, 0.8),
             "platform_count": (1, 3), "weeks_active": (1, 52), "persona_type": (0, 2)
         }
         lo, hi = norm_ranges.get(feat, (0, 1))
-        norm_val = (val - lo) / (hi - lo) if hi != lo else 0.5
-        contribution = round(importance * norm_val * 100, 1)  # as % of premium
-        # For platform_count and weeks_active, higher = lower risk
-        direction = "decrease" if feat in ["platform_count", "weeks_active"] else "increase"
+        
+        # Shift: (current - average) / range
+        shift = (val - avg_val) / (hi - lo) if hi != lo else 0
+        
+        # Impact: how much this feature "pushed" the premium up or down
+        # scaled by importance to ensure sum of absolute impacts relates to total shift
+        impact = shift * importance * 100 
+        
+        # Direction logic: 
+        # For most, higher value = higher risk (increase)
+        # For platform_count and weeks_active, higher = lower risk (so positive shift = decrease)
+        is_inverse = feat in ["platform_count", "weeks_active"]
+        
+        if is_inverse:
+            actual_direction = "decrease" if shift > 0 else "increase"
+        else:
+            actual_direction = "increase" if shift > 0 else "decrease"
+            
         breakdown.append({
             "feature": feat,
             "label": FEATURE_LABELS.get(feat, feat),
-            "contribution": contribution,
-            "direction": direction
+            "contribution": round(abs(impact), 1),
+            "direction": actual_direction
         })
 
+    # Sort by absolute impact to show the most "insightful" factors first
     breakdown.sort(key=lambda x: x["contribution"], reverse=True)
 
     return {
