@@ -60,8 +60,20 @@ class WeeklyCycleResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class PayoutResponse(BaseModel):
+    id: UUID
+    claim_id: UUID
+    amount: float
+    status: str
+    payment_provider: Optional[str] = None
+    payment_ref: Optional[str] = None
+    
+    class Config:
+        from_attributes = True
+
 class DashboardResponse(BaseModel):
     worker: WorkerProfileResponse
     platforms: List[PlatformAccountResponse]
     policy: Optional[PolicyResponse] = None
     active_cycle: Optional[WeeklyCycleResponse] = None
+    recent_payouts: List[PayoutResponse] = []

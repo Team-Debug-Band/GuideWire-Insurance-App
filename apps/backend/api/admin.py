@@ -166,8 +166,50 @@ def get_metrics(db: Session = Depends(get_db)):
 def get_claims(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
     return db.query(Claim).offset(skip).limit(limit).all()
 
-@router.get("/fraud-alerts", response_model=List[FraudAlertResponse])
-def get_fraud_alerts(db: Session = Depends(get_db)):
+@router.post("/simulate-aqi", response_model=SimulateResponse)
+def simulate_aqi(req: SimulateEventRequest, db: Session = Depends(get_db)):
+    event = ExternalEvent(
+        city=req.city,
+        zone=req.zone,
+        event_type=EventType.AQI,
+        severity=req.severity,
+        start_time=datetime.datetime.utcnow(),
+        end_time=datetime.datetime.utcnow() + datetime.timedelta(hours=12)
+    )
+    db.add(event)
+    db.commit()
+    db.refresh(event)
+    
+    # Very simple mock logic: find all active cycles globally
+    active_cycles = db.query(WeeklyCycle).filter(WeeklyCycle.status == CycleStatus.ACTIVE).all()
+    
+    for cycle in active_cycles:
+        disruption = DisruptionEvent(
+            worker_id=cycle.worker_id,
+            cycle_id=cycle.id,
+            event_type=EventType.AQI,
+            start_time=event.start_time,
+            end_time=event.end_time,
+            estimated_loss=float(cycle.expected_income) * 0.05 * req.severity
+        )
+        db.add(disruption)
+        
+        # Auto create claim
+        claim = Claim(
+            worker_id=cycle.worker_id,
+            policy_id=cycle.policy_id,
+            cycle_id=cycle.id,
+            disruption_id=disruption.id,
+            status=ClaimStatus.CREATED,
+            claimed_amount=disruption.estimated_loss
+        )
+        db.add(claim)
+    
+    db.commit()
+    return SimulateResponse(event_id=event.id, message="AQI event simulated", affected_cycles=len(active_cycles))
+
+@router.get("/fraud-dashboard", response_model=List[FraudAlertResponse])
+def get_fraud_dashboard(db: Session = Depends(get_db)):
     return db.query(ZoneFraudAlert).all()
 
 @router.post("/parametric-simulator", response_model=ParametricSimulatorResponse)
