@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+sqlalchemy
+alembic
+pyjwt
+passlib[bcrypt]
+python-dotenv
+httpx
+apscheduler
+scikit-learn
+pandas
+numpy
+razorpay
+psycopg2-binary
+pydantic
+jwt
+python-multipart
