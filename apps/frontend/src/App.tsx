@@ -353,7 +353,7 @@ const LandingPage = ({ onStart }: { onStart: (role?: 'ADMIN' | 'USER') => void }
             For Partners
           </button>
         </div>
-        <Button onClick={onStart} size="md">GET STARTED</Button>
+        <Button onClick={() => onStart()} size="md">GET STARTED</Button>
       </nav>
 
       <AnimatePresence mode="wait">
