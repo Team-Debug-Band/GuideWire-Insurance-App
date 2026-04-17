@@ -48,96 +48,116 @@ router = APIRouter()
 
 @router.post("/simulate-rain", response_model=SimulateResponse)
 def simulate_rain(req: SimulateEventRequest, db: Session = Depends(get_db)):
+    event, count = _process_disruption_internal(db, req, EventType.RAIN, 4)
+    return SimulateResponse(
+        event_id=event.id, message="Rain simulated and payouts processed", affected_cycles=count
+    )
+
+def _process_disruption_internal(db: Session, req: SimulateEventRequest, event_type: EventType, duration_hours: int):
     event = ExternalEvent(
         city=req.city,
         zone=req.zone,
-        event_type=EventType.RAIN,
+        event_type=event_type,
         severity=req.severity,
         start_time=datetime.datetime.utcnow(),
-        end_time=datetime.datetime.utcnow() + datetime.timedelta(hours=4),
+        end_time=datetime.datetime.utcnow() + datetime.timedelta(hours=duration_hours),
     )
     db.add(event)
     db.commit()
     db.refresh(event)
 
-    # Very simple mock logic: find all active cycles globally (in a real app, filter by worker city)
-    active_cycles = (
-        db.query(WeeklyCycle).filter(WeeklyCycle.status == CycleStatus.ACTIVE).all()
+    active_cycles_query = (
+        db.query(WeeklyCycle)
+        .join(Worker)
+        .filter(WeeklyCycle.status == CycleStatus.ACTIVE)
+        .filter(func.lower(Worker.city) == func.lower(req.city))
     )
+    
+    if req.zone and req.zone.upper() != "ALL":
+        active_cycles_query = active_cycles_query.filter(func.lower(Worker.primary_zone) == func.lower(req.zone))
+        
+    active_cycles = active_cycles_query.all()
 
     for cycle in active_cycles:
-        disruption = DisruptionEvent(
-            worker_id=cycle.worker_id,
-            cycle_id=cycle.id,
-            event_type=EventType.RAIN,
-            start_time=event.start_time,
-            end_time=event.end_time,
-            estimated_loss=float(cycle.expected_income) * 0.1 * req.severity,
-        )
-        db.add(disruption)
-
-        # Auto create claim
-        claim = Claim(
-            worker_id=cycle.worker_id,
-            policy_id=cycle.policy_id,
-            cycle_id=cycle.id,
-            disruption_id=disruption.id,
-            status=ClaimStatus.CREATED,
-            claimed_amount=disruption.estimated_loss,
-        )
-        db.add(claim)
+        _process_single_payout(db, cycle, event, req.severity, 0.1)
 
     db.commit()
-    return SimulateResponse(
-        event_id=event.id, message="Rain simulated", affected_cycles=len(active_cycles)
+    return event, len(active_cycles)
+
+def _process_single_payout(db: Session, cycle: WeeklyCycle, event: ExternalEvent, severity: float, default_loss_factor: float):
+    # loss factor depends on event type
+    loss_map = {
+        EventType.RAIN: 0.1,
+        EventType.CURFEW: 0.25,
+        EventType.AQI: 0.05
+    }
+    factor = loss_map.get(event.event_type, default_loss_factor)
+    
+    disruption = DisruptionEvent(
+        worker_id=cycle.worker_id,
+        cycle_id=cycle.id,
+        event_type=event.event_type,
+        start_time=event.start_time,
+        end_time=event.end_time,
+        estimated_loss=float(cycle.expected_income) * factor * severity,
     )
+    db.add(disruption)
+
+    # Auto create claim
+    claim = Claim(
+        worker_id=cycle.worker_id,
+        policy_id=cycle.policy_id,
+        cycle_id=cycle.id,
+        disruption_id=disruption.id,
+        status=ClaimStatus.APPROVED,
+        claimed_amount=disruption.estimated_loss,
+        approved_amount=disruption.estimated_loss,
+        fraud_score=0.1,
+    )
+    db.add(claim)
+    db.flush() 
+
+    # Automatically call payout flow
+    worker = cycle.worker
+    result = process_payout(
+        claim_id=str(claim.id),
+        worker_phone=worker.phone if worker else "",
+        amount_rupees=float(claim.approved_amount)
+    )
+    
+    if result.get("status") == "SUCCESS":
+        payout = Payout(
+            claim_id=claim.id,
+            amount=claim.approved_amount,
+            provider=result.get("provider"),
+            reference_id=result.get("reference_id"),
+            status=PaymentStatus.SUCCESS,
+            created_at=datetime.datetime.utcnow(),
+        )
+        db.add(payout)
+        claim.status = ClaimStatus.PAID
+        claim.paid_at = datetime.datetime.utcnow()
+        
+        cycle.total_payout = float(cycle.total_payout or 0) + float(claim.approved_amount)
+    else:
+        payout = Payout(
+            claim_id=claim.id,
+            amount=claim.approved_amount,
+            provider=result.get("provider"),
+            reference_id=result.get("reference_id"),
+            status=PaymentStatus.FAILED,
+            created_at=datetime.datetime.utcnow(),
+        )
+        db.add(payout)
 
 
 @router.post("/simulate-curfew", response_model=SimulateResponse)
 def simulate_curfew(req: SimulateEventRequest, db: Session = Depends(get_db)):
-    event = ExternalEvent(
-        city=req.city,
-        zone=req.zone,
-        event_type=EventType.CURFEW,
-        severity=req.severity,
-        start_time=datetime.datetime.utcnow(),
-        end_time=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
-    )
-    db.add(event)
-    db.commit()
-    db.refresh(event)
-
-    # Very simple mock logic
-    active_cycles = (
-        db.query(WeeklyCycle).filter(WeeklyCycle.status == CycleStatus.ACTIVE).all()
-    )
-
-    for cycle in active_cycles:
-        disruption = DisruptionEvent(
-            worker_id=cycle.worker_id,
-            cycle_id=cycle.id,
-            event_type=EventType.CURFEW,
-            start_time=event.start_time,
-            end_time=event.end_time,
-            estimated_loss=float(cycle.expected_income) * 0.25 * req.severity,
-        )
-        db.add(disruption)
-
-        claim = Claim(
-            worker_id=cycle.worker_id,
-            policy_id=cycle.policy_id,
-            cycle_id=cycle.id,
-            disruption_id=disruption.id,
-            status=ClaimStatus.CREATED,
-            claimed_amount=disruption.estimated_loss,
-        )
-        db.add(claim)
-
-    db.commit()
+    event, count = _process_disruption_internal(db, req, EventType.CURFEW, 24)
     return SimulateResponse(
         event_id=event.id,
-        message="Curfew simulated",
-        affected_cycles=len(active_cycles),
+        message="Curfew simulated and payouts processed",
+        affected_cycles=count,
     )
 
 
@@ -175,16 +195,18 @@ def process_claims(db: Session = Depends(get_db)):
                 amount_rupees=float(claim.approved_amount)
             )
             
-            if result.get("success"):
+            if result.get("status") == "SUCCESS":
                 payout = Payout(
                     claim_id=claim.id,
                     amount=claim.approved_amount,
-                    payment_provider=result.get("provider"),
-                    payment_ref=result.get("payment_ref"),
+                    provider=result.get("provider"),
+                    reference_id=result.get("reference_id"),
                     status=PaymentStatus.SUCCESS,
+                    created_at=datetime.datetime.utcnow(),
                 )
                 db.add(payout)
                 claim.status = ClaimStatus.PAID
+                claim.paid_at = datetime.datetime.utcnow()
                 cycle = db.query(WeeklyCycle).filter(WeeklyCycle.id == claim.cycle_id).first()
                 if cycle:
                     cycle.total_payout = float(cycle.total_payout or 0) + float(claim.approved_amount)
@@ -192,11 +214,13 @@ def process_claims(db: Session = Depends(get_db)):
                 payout = Payout(
                     claim_id=claim.id,
                     amount=claim.approved_amount,
-                    payment_provider="RAZORPAY_SANDBOX",
+                    provider=result.get("provider"),
+                    reference_id=result.get("reference_id"),
                     status=PaymentStatus.FAILED,
+                    created_at=datetime.datetime.utcnow(),
                 )
                 db.add(payout)
-                # Keep status as APPROVED so it can be retried
+                # Keep status as APPROVED so it can be retried, do not set paid_at
             
             approved += 1
             auto_approved += 1
@@ -277,50 +301,11 @@ def get_claims(skip: int = 0, limit: int = 50, db: Session = Depends(get_db)):
 
 @router.post("/simulate-aqi", response_model=SimulateResponse)
 def simulate_aqi(req: SimulateEventRequest, db: Session = Depends(get_db)):
-    event = ExternalEvent(
-        city=req.city,
-        zone=req.zone,
-        event_type=EventType.AQI,
-        severity=req.severity,
-        start_time=datetime.datetime.utcnow(),
-        end_time=datetime.datetime.utcnow() + datetime.timedelta(hours=12),
-    )
-    db.add(event)
-    db.commit()
-    db.refresh(event)
-
-    # Very simple mock logic: find all active cycles globally
-    active_cycles = (
-        db.query(WeeklyCycle).filter(WeeklyCycle.status == CycleStatus.ACTIVE).all()
-    )
-
-    for cycle in active_cycles:
-        disruption = DisruptionEvent(
-            worker_id=cycle.worker_id,
-            cycle_id=cycle.id,
-            event_type=EventType.AQI,
-            start_time=event.start_time,
-            end_time=event.end_time,
-            estimated_loss=float(cycle.expected_income) * 0.05 * req.severity,
-        )
-        db.add(disruption)
-
-        # Auto create claim
-        claim = Claim(
-            worker_id=cycle.worker_id,
-            policy_id=cycle.policy_id,
-            cycle_id=cycle.id,
-            disruption_id=disruption.id,
-            status=ClaimStatus.CREATED,
-            claimed_amount=disruption.estimated_loss,
-        )
-        db.add(claim)
-
-    db.commit()
+    event, count = _process_disruption_internal(db, req, EventType.AQI, 12)
     return SimulateResponse(
         event_id=event.id,
-        message="AQI event simulated",
-        affected_cycles=len(active_cycles),
+        message="AQI event simulated and payouts processed",
+        affected_cycles=count,
     )
 
 
@@ -415,16 +400,18 @@ def approve_claim(
             worker_phone=worker.phone if worker else "",
             amount_rupees=float(req.approved_amount)
         )
-        if result.get("success"):
+        if result.get("status") == "SUCCESS":
             payout = Payout(
                 claim_id=claim.id,
                 amount=req.approved_amount,
-                payment_provider=result.get("provider"),
-                payment_ref=result.get("payment_ref"),
+                provider=result.get("provider"),
+                reference_id=result.get("reference_id"),
                 status=PaymentStatus.SUCCESS,
+                created_at=datetime.datetime.utcnow(),
             )
             db.add(payout)
             claim.status = ClaimStatus.PAID
+            claim.paid_at = datetime.datetime.utcnow()
             cycle = db.query(WeeklyCycle).filter(WeeklyCycle.id == claim.cycle_id).first()
             if cycle:
                 cycle.total_payout = float(cycle.total_payout or 0) + float(req.approved_amount)
@@ -432,19 +419,32 @@ def approve_claim(
             payout = Payout(
                 claim_id=claim.id,
                 amount=req.approved_amount,
-                payment_provider="RAZORPAY_SANDBOX",
+                provider=result.get("provider"),
+                reference_id=result.get("reference_id"),
                 status=PaymentStatus.FAILED,
+                created_at=datetime.datetime.utcnow(),
             )
             db.add(payout)
 
     db.commit()
     db.refresh(claim)
 
-    return {
+    response = {
         "message": "Claim approved",
         "claim_id": str(claim.id),
         "approved_amount": float(claim.approved_amount),
     }
+
+    if 'result' in locals():
+        response["payout"] = {
+            "status": result.get("status"),
+            "provider": result.get("provider"),
+            "reference_id": result.get("reference_id"),
+            "amount": result.get("amount"),
+            "processed_at": result.get("processed_at")
+        }
+
+    return response
 
 
 @router.post("/claims/{claim_id}/reject")

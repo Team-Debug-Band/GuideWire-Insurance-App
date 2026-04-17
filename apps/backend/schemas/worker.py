@@ -65,8 +65,8 @@ class PayoutResponse(BaseModel):
     claim_id: UUID
     amount: float
     status: str
-    payment_provider: Optional[str] = None
-    payment_ref: Optional[str] = None
+    provider: Optional[str] = None
+    reference_id: Optional[str] = None
     
     class Config:
         from_attributes = True
@@ -75,7 +75,7 @@ class PayoutDetailResponse(BaseModel):
     payout_id: UUID
     claim_id: UUID
     amount: float
-    payment_ref: Optional[str] = None
+    reference_id: Optional[str] = None
     provider: Optional[str] = None
     status: str
     timestamp: datetime.datetime

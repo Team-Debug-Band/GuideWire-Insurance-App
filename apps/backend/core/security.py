@@ -3,8 +3,16 @@ from datetime import datetime, timedelta
 from typing import Any, Union
 from passlib.context import CryptContext
 import jwt
+import bcrypt
 
-PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Workaround for passlib/bcrypt compatibility issue
+if not hasattr(bcrypt, "__about__"):
+    class BcryptAbout:
+        __version__ = getattr(bcrypt, "__version__", "4.0.0")
+    bcrypt.__about__ = BcryptAbout()
+
+# Switching to pbkdf2_sha256 due to bcrypt compatibility issues on this environment
+PWD_CONTEXT = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret_key_change_me_in_prod")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7 # 7 days

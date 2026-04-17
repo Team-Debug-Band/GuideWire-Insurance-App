@@ -158,6 +158,7 @@ class Claim(Base):
     
     fraud_score = Column(Float, nullable=True)
     fraud_signal_log = Column(JSON, nullable=True)
+    paid_at = Column(DateTime(timezone=True), nullable=True)
     
     worker = relationship("Worker", back_populates="claims")
 
@@ -166,8 +167,8 @@ class Payout(Base):
     id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     claim_id = Column(Uuid(as_uuid=True), ForeignKey("claims.id"))
     amount = Column(Numeric(10, 2), nullable=False)
-    payment_provider = Column(String, nullable=True) # RAZORPAY_SANDBOX, etc.
-    payment_ref = Column(String, nullable=True)
+    provider = Column(String, nullable=True) # RAZORPAY, MOCK, etc.
+    reference_id = Column(String, nullable=True)
     status = Column(SAEnum(PaymentStatus), default=PaymentStatus.INITIATED)
     created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
 

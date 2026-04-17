@@ -7,11 +7,15 @@ from datetime import datetime, timezone
 logger = logging.getLogger(__name__)
 
 # Read environment variables
+PAYOUT_ENV = os.getenv("PAYOUT_ENV", "MOCK").upper()
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
-# Set MOCK_MODE for development/demo if keys are missing
-MOCK_MODE = not (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET)
+# Validate configuration
+if PAYOUT_ENV == "RAZORPAY" and not (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET):
+    logger.error("PAYOUT CONFIG ERROR: PAYOUT_ENV set to RAZORPAY but keys are missing! Falling back to safe error state.")
+
+logger.info(f"PAYOUT SERVICE: Active Environment -> {PAYOUT_ENV}")
 
 def process_payout(claim_id: str, worker_phone: str, amount_rupees: float) -> dict:
     """
@@ -19,27 +23,27 @@ def process_payout(claim_id: str, worker_phone: str, amount_rupees: float) -> di
     
     Returns:
         dict: {
-            "success": bool,
-            "payment_ref": str,
             "provider": str,
+            "reference_id": str or None,
+            "status": str (SUCCESS/FAILED),
+            "processed_at": str (ISO),
             "amount": float,
-            "timestamp": str (ISO),
             "error": str or None
         }
     """
     # Convert amount to paise (Razorpay standard)
     amount_paise = int(amount_rupees * 100)
-    timestamp = datetime.now(timezone.utc).isoformat()
+    processed_at = datetime.now(timezone.utc).isoformat()
     
-    if MOCK_MODE:
+    if PAYOUT_ENV == "MOCK":
         mock_ref = f"mock_rzp_{claim_id}_{int(datetime.now().timestamp())}"
         logger.warning(f"MOCK PAYOUT: Success for claim {claim_id}, Amount ₹{amount_rupees}, Ref {mock_ref}")
         return {
-            "success": True,
-            "payment_ref": mock_ref,
             "provider": "MOCK",
+            "reference_id": mock_ref,
+            "status": "SUCCESS",
+            "processed_at": processed_at,
             "amount": amount_rupees,
-            "timestamp": timestamp,
             "error": None
         }
 
@@ -61,16 +65,16 @@ def process_payout(claim_id: str, worker_phone: str, amount_rupees: float) -> di
         }
         
         order = client.order.create(data=order_data)
-        payment_ref = order.get("id")
+        reference_id = order.get("id")
         
-        logger.info(f"RAZORPAY PAYOUT SUCCESS: order_id={payment_ref}, claim_id={claim_id}, amount=₹{amount_rupees}")
+        logger.info(f"RAZORPAY PAYOUT SUCCESS: order_id={reference_id}, claim_id={claim_id}, amount=₹{amount_rupees}")
         
         return {
-            "success": True,
-            "payment_ref": payment_ref,
             "provider": "RAZORPAY",
+            "reference_id": reference_id,
+            "status": "SUCCESS",
+            "processed_at": processed_at,
             "amount": amount_rupees,
-            "timestamp": timestamp,
             "error": None
         }
         
@@ -79,10 +83,10 @@ def process_payout(claim_id: str, worker_phone: str, amount_rupees: float) -> di
         logger.error(f"RAZORPAY PAYOUT ERROR: claim_id={claim_id}, error={error_msg}")
         
         return {
-            "success": False,
-            "payment_ref": None,
             "provider": "RAZORPAY",
+            "reference_id": None,
+            "status": "FAILED",
+            "processed_at": processed_at,
             "amount": amount_rupees,
-            "timestamp": timestamp,
             "error": error_msg
         }

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurelyAI - Parametric Insurance Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid var(--border);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--text-light);
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Dashboard Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .card-title {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #ecfdf5;
+            color: #10b981;
+            gap: 0.25rem;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+        }
+
+        /* Chart Simulation */
+        .chart-container {
+            grid-column: span 2;
+            height: 300px;
+            position: relative;
+            padding-top: 2rem;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 1rem;
+            height: 100%;
+            padding: 1rem;
+        }
+
+        .chart-bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: var(--primary-light);
+            border-radius: 4px 4px 0 0;
+            transition: height 1s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s;
+            position: relative;
+        }
+
+        .chart-bar.active-simulation {
+            background: #fee2e2;
+        }
+
+        .chart-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .chart-value-now {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* History Table */
+        .table-card {
+            grid-column: span 3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        /* Alerts & Toasts */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #fff;
+            padding: 1.25rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            gap: 1rem;
+            transform: translateY(150%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .toast-content h4 {
+            font-size: 0.9375rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-content p {
+            font-size: 0.8125rem;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .alert-banner {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            animation: slideDown 0.5s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Demo Controls */
+        .controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 2000;
+        }
+
+        .btn-start {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-start:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        .step-indicator {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            background: #fff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            display: none;
+        }
+
+        .highlight-card {
+            animation: pulse-border 1s infinite alternate;
+        }
+
+        @keyframes pulse-border {
+            from { border-color: var(--border); box-shadow: 0 0 0 rgba(37, 99, 235, 0); }
+            to { border-color: var(--primary); box-shadow: 0 0 10px rgba(37, 99, 235, 0.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">S</div>
+            SurelyAI
+        </div>
+        <nav>
+            <a href="#" class="nav-item active">Dashboard</a>
+            <a href="#" class="nav-item">Policy Details</a>
+            <a href="#" class="nav-item">Earnings</a>
+            <a href="#" class="nav-item">Payout History</a>
+            <a href="#" class="nav-item">Settings</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+        <header class="header">
+            <div>
+                <h1 style="font-size: 1.25rem; font-weight: 600;">Welcome back, Rajesh</h1>
+                <p style="color: var(--text-light); font-size: 0.875rem;">Chennai • E-commerce Delivery</p>
+            </div>
+            <div class="user-profile">
+                <div class="avatar">R</div>
+            </div>
+        </header>
+
+        <div id="rain-alert" class="alert-banner">
+            <span style="font-size: 1.25rem;">🌧️</span>
+            <div>
+                <strong style="display: block; font-size: 0.875rem;">Heavy Rain Alert in Chennai</strong>
+                <span style="font-size: 0.8125rem;">Detected 45mm/hr rainfall in your primary zone. Tracking income disruption...</span>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card" id="cov-card">
+                <div class="card-title">Weekly Coverage</div>
+                <div class="card-value">₹<span id="cov-val">3,000</span></div>
+                <div style="margin-top: 1rem;" class="status-badge" id="status-badge">
+                    <div class="status-dot"></div> Protection Active
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-title">Weekly Premium</div>
+                <div class="card-value">₹120</div>
+                <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">Auto-renewing on Monday</p>
+            </div>
+            <div class="card" id="earnings-card">
+                <div class="card-title">Projected Earnings</div>
+                <div class="card-value">₹<span id="proj-earn-val">1,000</span></div>
+                <p id="actual-earn-p" style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">Tracking live orders...</p>
+            </div>
+
+            <div class="card chart-container">
+                <div class="card-title">Income Tracker (Last 4 Hours)</div>
+                <div class="chart-bars">
+                    <div class="chart-bar-wrapper">
+                        <div class="chart-bar" style="height: 70%;"></div>
+                        <div class="chart-label">09:00</div>
+                    </div>
+                    <div class="chart-bar-wrapper">
+                        <div class="chart-bar" style="height: 85%;"></div>
+                        <div class="chart-label">10:00</div>
+                    </div>
+                    <div class="chart-bar-wrapper">
+                        <div class="chart-bar" style="height: 60%;"></div>
+                        <div class="chart-label">11:00</div>
+                    </div>
+                    <div class="chart-bar-wrapper" id="sim-bar-wrapper">
+                        <div class="chart-bar" id="sim-bar" style="height: 90%;">
+                            <div class="chart-value-now" id="sim-val-now">₹1,000</div>
+                        </div>
+                        <div class="chart-label">12:00 (Now)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Trigger Conditions</div>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.5rem;">
+                        <span>Rainfall Intensity</span>
+                        <span>45mm / 30mm</span>
+                    </div>
+                    <div style="height: 4px; background: #e2e8f0; border-radius: 2px;">
+                        <div style="width: 100%; height: 100%; background: var(--warning); border-radius: 2px;"></div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.5rem;">
+                        <span>Income Drop</span>
+                        <span id="income-cond">0% / 30%</span>
+                    </div>
+                    <div style="height: 4px; background: #e2e8f0; border-radius: 2px;">
+                        <div id="income-progress" style="width: 10%; height: 100%; background: var(--primary); border-radius: 2px; transition: width 1s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <div class="card-title">Payout History</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Event Type</th>
+                            <th>Loss Amount</th>
+                            <th>Payout Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-light); padding: 2rem;">No recent payouts</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <div class="controls">
+        <button class="btn-start" onclick="startDemo()">Start Simulation</button>
+        <div id="step-info" class="step-indicator"></div>
+    </div>
+
+    <!-- Notification Toasts -->
+    <div id="toast-payout" class="toast">
+        <div class="toast-icon">✓</div>
+        <div class="toast-content">
+            <h4>Payout Successful</h4>
+            <p id="toast-payout-text">₹450 has been credited to your bank account via Razorpay for the disruption event.</p>
+        </div>
+    </div>
+
+    <div id="toast-claim" class="toast" style="border-left-color: var(--success);">
+        <div class="toast-icon" style="background: #ecfdf5; color: #10b981;">📝</div>
+        <div class="toast-content">
+            <h4>Claim Automatically Triggered</h4>
+            <p>Verification engine is analyzing the event and your earnings data.</p>
+        </div>
+    </div>
+
+    <div id="toast-fraud" class="toast" style="border-left-color: var(--success);">
+        <div class="toast-icon" style="background: #ecfdf5; color: #10b981;">👁️</div>
+        <div class="toast-content">
+            <h4>Claim Verified</h4>
+            <p>Fraud check complete. Benefit approved based on regional rainfall and verified earnings drop.</p>
+        </div>
+    </div>
+
+    <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function startDemo() {
+            const btn = document.querySelector('.btn-start');
+            btn.style.display = 'none';
+            const stepInfo = document.getElementById('step-info');
+            stepInfo.style.display = 'block';
+
+            // Step 1: Initial Dashboard State
+            stepInfo.innerText = "Step 1: Dashboard Loaded (Coverage ₹3000)";
+            await sleep(2000);
+
+            // Step 2: Simulate Rain
+            stepInfo.innerText = "Step 2: Detecting External Event (Rain in Chennai)";
+            document.getElementById('rain-alert').style.display = 'flex';
+            await sleep(3000);
+
+            // Step 3: Simulate Income Drop
+            stepInfo.innerText = "Step 3: Income Disruption Detected (₹1000 → ₹400)";
+            document.getElementById('proj-earn-val').innerText = '400';
+            document.getElementById('proj-earn-val').style.color = 'var(--danger)';
+            document.getElementById('actual-earn-p').innerText = "Loss detected: ₹600";
+            document.getElementById('actual-earn-p').style.color = 'var(--danger)';
+            document.getElementById('sim-bar').style.height = '40%';
+            document.getElementById('sim-bar').classList.add('active-simulation');
+            document.getElementById('sim-val-now').innerText = '₹400';
+            document.getElementById('income-cond').innerText = '60% / 30%';
+            document.getElementById('income-progress').style.width = '100%';
+            document.getElementById('income-progress').style.background = 'var(--danger)';
+            document.getElementById('earnings-card').classList.add('highlight-card');
+            await sleep(3000);
+
+            // Step 4: Auto Claim
+            stepInfo.innerText = "Step 4: Smart Trigger Initiated";
+            document.getElementById('earnings-card').classList.remove('highlight-card');
+            document.getElementById('toast-claim').classList.add('show');
+            await sleep(3000);
+            document.getElementById('toast-claim').classList.remove('show');
+
+            // Step 5: Fraud Check
+            stepInfo.innerText = "Step 5: Automated Fraud Verification (XAI)";
+            document.getElementById('toast-fraud').classList.add('show');
+            await sleep(3000);
+            document.getElementById('toast-fraud').classList.remove('show');
+
+            // Step 6: Payout
+            stepInfo.innerText = "Step 6: Payout Authorized via Razorpay";
+            document.getElementById('toast-payout').classList.add('show');
+            
+            // Update coverage and status
+            document.getElementById('cov-val').innerText = '2,550'; // 3000 - 450
+            document.getElementById('status-badge').innerHTML = '<div class="status-dot"></div> Payout Credited';
+            document.getElementById('status-badge').style.background = '#dcfce7';
+            document.getElementById('cov-card').classList.add('highlight-card');
+            
+            // Update table
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = `
+                <tr>
+                    <td>Today, 12:45</td>
+                    <td>Heavy Rainfall</td>
+                    <td>₹600.00</td>
+                    <td style="font-weight: 600; color: var(--success);">₹450.00</td>
+                    <td><span class="status-badge">SUCCESS</span></td>
+                </tr>
+            `;
+            
+            await sleep(5000);
+            document.getElementById('toast-payout').classList.remove('show');
+            document.getElementById('cov-card').classList.remove('highlight-card');
+            
+            stepInfo.innerText = "Demo Complete: End-to-end Parametric Flow Demonstrated.";
+            btn.style.display = 'block';
+            btn.innerText = "Restart Simulation";
+        }
+    </script>
+</body>
+</html>

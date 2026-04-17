@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import PremiumExplainer from '../components/PremiumExplainer';
 import { clearToken } from '../utils/auth';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { API_BASE_URL, POLLING_INTERVAL } from '../config';
 
 interface DashboardData {
     worker: { name: string; city: string; persona_type: string };
@@ -15,10 +15,23 @@ interface DashboardData {
 
 const WorkerDashboard: React.FC = () => {
     const [data, setData] = useState<DashboardData | null>(null);
+    const [payouts, setPayouts] = useState<any[]>([]);
     const [weather, setWeather] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    const fetchPayouts = useCallback(async () => {
+        const token = localStorage.getItem("surelyai_token");
+        try {
+            const res = await axios.get(`${API_BASE_URL}/workers/me/payouts`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setPayouts(res.data);
+        } catch (err) {
+            console.error("Failed to fetch payouts", err);
+        }
+    }, []);
 
     const fetchDashboard = useCallback(async () => {
         const token = localStorage.getItem("surelyai_token");
@@ -48,7 +61,16 @@ const WorkerDashboard: React.FC = () => {
 
     useEffect(() => {
         fetchDashboard();
-    }, [fetchDashboard]);
+        fetchPayouts();
+
+        // Polling for "real-time" updates every 30 seconds
+        const interval = setInterval(() => {
+            fetchDashboard();
+            fetchPayouts();
+        }, POLLING_INTERVAL);
+
+        return () => clearInterval(interval);
+    }, [fetchDashboard, fetchPayouts]);
 
     const handleLogout = () => {
         clearToken();
@@ -156,36 +178,54 @@ const WorkerDashboard: React.FC = () => {
                     <div className="bg-white rounded-3xl border border-surface-container shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-surface-container flex justify-between items-center">
                             <h3 className="text-lg font-black text-on-background headline uppercase tracking-tight">Payout History</h3>
-                            <button className="text-[10px] font-black text-primary uppercase tracking-widest">View All</button>
+                            <button className="text-[10px] font-black text-primary uppercase tracking-widest" onClick={fetchPayouts}>Refresh</button>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead className="bg-surface border-b border-surface-container">
                                     <tr>
-                                        <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Ref #</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Amount</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Provider</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Event</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Method</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Date</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-outline uppercase tracking-widest">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-surface-container">
-                                    {data.recent_payouts.length === 0 ? (
+                                    {payouts.length === 0 ? (
                                         <tr>
-                                            <td colSpan={4} className="px-6 py-12 text-center text-xs text-outline font-medium italic">No recent payouts found.</td>
+                                            <td colSpan={5} className="px-6 py-12 text-center text-xs text-outline font-medium italic">No recent payouts found.</td>
                                         </tr>
                                     ) : (
-                                        data.recent_payouts.map((p, i) => (
-                                            <tr key={i} className="hover:bg-surface/50 transition-colors">
-                                                <td className="px-6 py-4 text-xs font-black headline tabular-nums">#{p.id.slice(0, 8)}</td>
-                                                <td className="px-6 py-4 text-xs font-black text-secondary tabular-nums">₹{p.amount}</td>
-                                                <td className="px-6 py-4 text-[10px] font-bold text-outline">{p.payment_provider}</td>
-                                                <td className="px-6 py-4">
-                                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'SUCCESS' ? 'bg-secondary/10 text-secondary' : 'bg-amber-100 text-amber-600'}`}>
-                                                        {p.status}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))
+                                        payouts.map((p, i) => {
+                                            const providerLabels: Record<string, string> = {
+                                                'RAZORPAY': 'Credited via Razorpay',
+                                                'MOCK': 'Processed (Demo Mode)'
+                                            };
+                                            const methodLabel = providerLabels[p.provider] || p.provider || 'System Credit';
+                                            
+                                            return (
+                                                <tr key={i} className="hover:bg-surface/50 transition-colors">
+                                                    <td className="px-6 py-4 text-xs font-black text-secondary tabular-nums">₹{p.amount}</td>
+                                                    <td className="px-6 py-4">
+                                                        <span className="text-[10px] font-bold text-on-background uppercase tracking-tight bg-surface px-2 py-1 rounded-lg">
+                                                            {p.event_type || 'GENERAL'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-widest">
+                                                        {methodLabel}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-[10px] font-bold text-outline uppercase tracking-widest">
+                                                        {new Date(p.payout_date).toLocaleDateString()}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${p.status === 'SUCCESS' ? 'bg-secondary/10 text-secondary' : 'bg-amber-100 text-amber-600'}`}>
+                                                            {p.status}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })
                                     )}
                                 </tbody>
                             </table>
