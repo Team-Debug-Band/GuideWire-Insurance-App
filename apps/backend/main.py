@@ -1,9 +1,22 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import auth, worker, admin, weather
+from contextlib import asynccontextmanager
 
-app = FastAPI(title="SurelyAI Gig Worker Insurance API", version="1.0.0")
+from api import auth, worker, admin, weather
+from scheduler import start_scheduler, stop_scheduler
+from services.trigger_pipeline import run_trigger_pipeline
+from core.db import SessionLocal
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_scheduler(db_session_factory=SessionLocal, trigger_service_fn=run_trigger_pipeline)
+    yield
+    stop_scheduler()
+
+app = FastAPI(title="SurelyAI Gig Worker Insurance API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
