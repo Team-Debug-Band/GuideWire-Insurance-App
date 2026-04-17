@@ -4,11 +4,15 @@ from typing import List
 import datetime
 
 from core.db import get_db
-from models.models import Worker, PlatformAccount, Policy, WeeklyCycle, CycleStatus, PolicyStatus
+from models.models import (
+    Worker, PlatformAccount, Policy, WeeklyCycle, 
+    CycleStatus, PolicyStatus, Payout, Claim, DisruptionEvent
+)
 from schemas.worker import (
     WorkerProfileUpdate, WorkerProfileResponse, 
     PlatformAccountCreate, PlatformAccountResponse,
-    PolicyResponse, DashboardResponse, WeeklyCycleResponse
+    PolicyResponse, DashboardResponse, WeeklyCycleResponse,
+    PayoutResponse, PayoutDetailResponse
 )
 from api.auth import get_current_user
 from services.pricing import compute_weekly_premium
@@ -156,10 +160,28 @@ def start_weekly_cycle(db: Session = Depends(get_db), current_user: Worker = Dep
     db.refresh(cycle)
     return cycle
 
-@router.get("/me/payouts", response_model=List[PayoutResponse])
+@router.get("/me/payouts", response_model=List[PayoutDetailResponse])
 def get_payouts(db: Session = Depends(get_db), current_user: Worker = Depends(get_current_user)):
-    # Join Payout with Claim to filter by worker_id
-    return db.query(Payout).join(Claim).filter(Claim.worker_id == current_user.id).all()
+    results = (
+        db.query(
+            Payout.id.label("payout_id"),
+            Claim.id.label("claim_id"),
+            Payout.amount,
+            Payout.payment_ref,
+            Payout.payment_provider.label("provider"),
+            Payout.status,
+            Payout.created_at.label("timestamp"),
+            DisruptionEvent.event_type,
+            Payout.created_at.label("payout_date")
+        )
+        .join(Claim, Payout.claim_id == Claim.id)
+        .join(DisruptionEvent, Claim.disruption_id == DisruptionEvent.id)
+        .filter(Claim.worker_id == current_user.id)
+        .order_by(Payout.created_at.desc())
+        .all()
+    )
+    
+    return results
 
 @router.get("/me/dashboard", response_model=DashboardResponse)
 def get_dashboard(db: Session = Depends(get_db), current_user: Worker = Depends(get_current_user)):

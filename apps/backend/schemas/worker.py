@@ -71,6 +71,20 @@ class PayoutResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class PayoutDetailResponse(BaseModel):
+    payout_id: UUID
+    claim_id: UUID
+    amount: float
+    payment_ref: Optional[str] = None
+    provider: Optional[str] = None
+    status: str
+    timestamp: datetime.datetime
+    event_type: Optional[str] = None
+    payout_date: datetime.datetime
+
+    class Config:
+        from_attributes = True
+
 class DashboardResponse(BaseModel):
     worker: WorkerProfileResponse
     platforms: List[PlatformAccountResponse]

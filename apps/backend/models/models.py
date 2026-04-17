@@ -169,6 +169,8 @@ class Payout(Base):
     payment_provider = Column(String, nullable=True) # RAZORPAY_SANDBOX, etc.
     payment_ref = Column(String, nullable=True)
     status = Column(SAEnum(PaymentStatus), default=PaymentStatus.INITIATED)
+    created_at = Column(DateTime(timezone=True), default=datetime.datetime.utcnow)
+
 
 class ZoneFraudAlert(Base):
     __tablename__ = "zone_fraud_alerts"

@@ -39,8 +39,9 @@ from schemas.admin import (
 from services.fraud import (
     compute_fraud_score,
     check_and_raise_zone_alert,
-    process_payout,
 )
+from services.payouts import process_payout
+
 
 router = APIRouter()
 
@@ -167,7 +168,36 @@ def process_claims(db: Session = Depends(get_db)):
         if fraud_score < 0.3:
             claim.status = ClaimStatus.APPROVED
             claim.approved_amount = claim.claimed_amount
-            process_payout(claim, db)
+            
+            result = process_payout(
+                claim_id=str(claim.id),
+                worker_phone=worker.phone if worker else "",
+                amount_rupees=float(claim.approved_amount)
+            )
+            
+            if result.get("success"):
+                payout = Payout(
+                    claim_id=claim.id,
+                    amount=claim.approved_amount,
+                    payment_provider=result.get("provider"),
+                    payment_ref=result.get("payment_ref"),
+                    status=PaymentStatus.SUCCESS,
+                )
+                db.add(payout)
+                claim.status = ClaimStatus.PAID
+                cycle = db.query(WeeklyCycle).filter(WeeklyCycle.id == claim.cycle_id).first()
+                if cycle:
+                    cycle.total_payout = float(cycle.total_payout or 0) + float(claim.approved_amount)
+            else:
+                payout = Payout(
+                    claim_id=claim.id,
+                    amount=claim.approved_amount,
+                    payment_provider="RAZORPAY_SANDBOX",
+                    status=PaymentStatus.FAILED,
+                )
+                db.add(payout)
+                # Keep status as APPROVED so it can be retried
+            
             approved += 1
             auto_approved += 1
         elif fraud_score <= 0.6:
@@ -379,7 +409,33 @@ def approve_claim(
     claim.approved_amount = req.approved_amount
 
     if req.approved_amount > 0:
-        process_payout(claim, db)
+        worker = db.query(Worker).filter(Worker.id == claim.worker_id).first()
+        result = process_payout(
+            claim_id=str(claim.id),
+            worker_phone=worker.phone if worker else "",
+            amount_rupees=float(req.approved_amount)
+        )
+        if result.get("success"):
+            payout = Payout(
+                claim_id=claim.id,
+                amount=req.approved_amount,
+                payment_provider=result.get("provider"),
+                payment_ref=result.get("payment_ref"),
+                status=PaymentStatus.SUCCESS,
+            )
+            db.add(payout)
+            claim.status = ClaimStatus.PAID
+            cycle = db.query(WeeklyCycle).filter(WeeklyCycle.id == claim.cycle_id).first()
+            if cycle:
+                cycle.total_payout = float(cycle.total_payout or 0) + float(req.approved_amount)
+        else:
+            payout = Payout(
+                claim_id=claim.id,
+                amount=req.approved_amount,
+                payment_provider="RAZORPAY_SANDBOX",
+                status=PaymentStatus.FAILED,
+            )
+            db.add(payout)
 
     db.commit()
     db.refresh(claim)
