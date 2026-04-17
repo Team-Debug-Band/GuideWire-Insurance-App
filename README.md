@@ -3,6 +3,7 @@
 **Guidewire DEVTrails 2026 | University Hackathon Submission**
 
 ---
+[View the Pitch Deck PDF](.diagrams/pitch-guidewire.pdf)
 
 ## Table of Contents
 
