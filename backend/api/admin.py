@@ -15,50 +15,46 @@ from schemas.admin import (
     ParametricSimulatorRequest, ParametricSimulatorResponse,
     ClaimResponse, FraudAlertResponse, MetricsResponse
 )
+from services.trigger_pipeline import run_trigger_pipeline
+
 
 router = APIRouter()
 
 @router.post("/simulate-rain", response_model=SimulateResponse)
-def simulate_rain(req: SimulateEventRequest, db: Session = Depends(get_db)):
-    event = ExternalEvent(
+async def simulate_rain(req: SimulateEventRequest, db: Session = Depends(get_db)):
+    result = await run_trigger_pipeline(
         city=req.city,
-        zone=req.zone,
-        event_type=EventType.RAIN,
+        event_type="RAIN",
         severity=req.severity,
-        start_time=datetime.datetime.utcnow(),
-        end_time=datetime.datetime.utcnow() + datetime.timedelta(hours=4)
+        db=db,
+        source="admin_sim"
     )
-    db.add(event)
-    db.commit()
-    db.refresh(event)
+    if result.get("status") == "duplicate":
+        return SimulateResponse(event_id=result["event_id"], message="Duplicate event exists", affected_cycles=0)
     
-    # Very simple mock logic: find all active cycles globally (in a real app, filter by worker city)
-    active_cycles = db.query(WeeklyCycle).filter(WeeklyCycle.status == CycleStatus.ACTIVE).all()
+    return SimulateResponse(
+        event_id=result["event_id"],
+        message="Rain simulated",
+        affected_cycles=result.get("workers_affected", 0)
+    )
+
+@router.post("/simulate-aqi", response_model=SimulateResponse)
+async def simulate_aqi(req: SimulateEventRequest, db: Session = Depends(get_db)):
+    result = await run_trigger_pipeline(
+        city=req.city,
+        event_type="AQI",
+        severity=req.severity,
+        db=db,
+        source="admin_sim"
+    )
+    if result.get("status") == "duplicate":
+        return SimulateResponse(event_id=result["event_id"], message="Duplicate event exists", affected_cycles=0)
     
-    for cycle in active_cycles:
-        disruption = DisruptionEvent(
-            worker_id=cycle.worker_id,
-            cycle_id=cycle.id,
-            event_type=EventType.RAIN,
-            start_time=event.start_time,
-            end_time=event.end_time,
-            estimated_loss=float(cycle.expected_income) * 0.1 * req.severity
-        )
-        db.add(disruption)
-        
-        # Auto create claim
-        claim = Claim(
-            worker_id=cycle.worker_id,
-            policy_id=cycle.policy_id,
-            cycle_id=cycle.id,
-            disruption_id=disruption.id,
-            status=ClaimStatus.CREATED,
-            claimed_amount=disruption.estimated_loss
-        )
-        db.add(claim)
-    
-    db.commit()
-    return SimulateResponse(event_id=event.id, message="Rain simulated", affected_cycles=len(active_cycles))
+    return SimulateResponse(
+        event_id=result["event_id"],
+        message="AQI simulated",
+        affected_cycles=result.get("workers_affected", 0)
+    )
 
 @router.post("/simulate-curfew", response_model=SimulateResponse)
 def simulate_curfew(req: SimulateEventRequest, db: Session = Depends(get_db)):

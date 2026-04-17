@@ -1,7 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged } from 'firebase/auth';
-import { doc, onSnapshot, setDoc, serverTimestamp, collection, query, where, orderBy, limit } from 'firebase/firestore';
-import { auth, db } from '../firebase';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 interface UserProfile {
   uid: string;
@@ -44,8 +41,19 @@ interface SystemEvent {
   active: boolean;
 }
 
+interface WorkerData {
+  id?: string;
+  uid?: string;
+  email: string;
+  role?: string;
+  name?: string;
+  city?: string;
+  primary_zone?: string;
+  persona_type?: string;
+}
+
 interface FirebaseContextType {
-  user: User | null;
+  user: { uid: string; email: string; role?: string } | null;
   profile: UserProfile | null;
   payouts: Payout[];
   claims: Claim[];
@@ -54,14 +62,20 @@ interface FirebaseContextType {
   isAuthReady: boolean;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
   connectPlatform: (platform: string) => Promise<void>;
-  mockLogin: (email: string) => void;
+  mockLogin: (email: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
 const FirebaseContext = createContext<FirebaseContextType | undefined>(undefined);
 
-export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+const API_URL = 'http://localhost:8000/api/v1';
+
+interface FirebaseProviderProps {
+  children: ReactNode;
+}
+
+export const FirebaseProvider = ({ children }: FirebaseProviderProps) => {
+  const [user, setUser] = useState<{ uid: string; email: string; role?: string } | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [claims, setClaims] = useState<Claim[]>([]);
@@ -69,171 +83,164 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [loading, setLoading] = useState(true);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
-  const mockLogin = (email: string) => {
-    const isAdmin = email.includes('admin');
-    const mockUser = {
-      uid: isAdmin ? 'mock-admin-123' : 'mock-user-123',
-      email: email,
-      displayName: email.split('@')[0],
-      photoURL: null, // Use UI default silhouette
-    } as User;
-    setUser(mockUser);
-    setIsAuthReady(true);
+  // Initialize from LocalStorage (Simulating onAuthStateChanged)
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetch(`${API_URL}/workers/me`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Invalid token");
+        return res.json();
+      })
+      .then(data => {
+        setupUserAndProfile(data);
+      })
+      .catch((e) => {
+        console.error("Auth failed:", e);
+        logout();
+      })
+      .finally(() => {
+        setIsAuthReady(true);
+        setLoading(false);
+      });
+    } else {
+      setIsAuthReady(true);
+      setLoading(false);
+    }
+  }, []);
+
+  const setupUserAndProfile = (workerData: WorkerData) => {
+    setUser({ uid: workerData.id || workerData.uid || 'mock-id', email: workerData.email || 'user@surely.ai', role: workerData.role });
     setProfile({
-      uid: isAdmin ? 'mock-admin-123' : 'mock-user-123',
-      fullName: email.split('@')[0],
-      city: 'Bangalore',
-      zone: 'Central',
-      workPersona: 'FOOD',
+      uid: workerData.id || workerData.uid || 'mock-id',
+      fullName: workerData.name || 'Gig Worker',
+      city: workerData.city || 'Bangalore',
+      zone: workerData.primary_zone || 'Central',
+      workPersona: (workerData.persona_type as any) || 'FOOD',
       createdAt: new Date(),
       connectedPlatforms: [],
-      role: isAdmin ? 'ADMIN' : 'USER',
+      role: (workerData.role as any) || 'USER',
     });
+    
+    const wId = workerData.id || workerData.uid || 'mock-id';
+
+    // Fallback Mock Data for UI features backend doesn't support yet
     setPayouts([
-      { id: 'p1', uid: 'mock-user-123', amount: 12.50, eventType: 'Extreme Rainfall', timestamp: new Date(), status: 'completed' },
-      { id: 'p2', uid: 'mock-user-123', amount: 8.00, eventType: 'Platform Outage', timestamp: new Date(Date.now() - 86400000), status: 'completed' },
+      { id: 'p1', uid: wId, amount: 12.50, eventType: 'Extreme Rainfall', timestamp: new Date(), status: 'completed' },
+      { id: 'p2', uid: wId, amount: 8.00, eventType: 'Platform Outage', timestamp: new Date(Date.now() - 86400000), status: 'completed' },
     ]);
     setClaims([
-      { id: 'c1', uid: 'mock-user-123', amount: 12.50, status: 'approved', date: new Date(), reason: 'Rainfall Threshold' },
-      { id: 'c2', uid: 'mock-user-123', amount: 8.00, status: 'approved', date: new Date(Date.now() - 86400000), reason: 'Platform Downtime' },
-      { id: 'c3', uid: 'mock-user-123', amount: 15.00, status: 'pending', date: new Date(Date.now() - 172800000), reason: 'Heat Wave Alert' },
+      { id: 'c1', uid: wId, amount: 12.50, status: 'approved', date: new Date(), reason: 'Rainfall Threshold' },
+      { id: 'c2', uid: wId, amount: 8.00, status: 'approved', date: new Date(Date.now() - 86400000), reason: 'Platform Downtime' },
     ]);
     setSystemEvents([
-      { id: 'e1', type: 'Storm', region: 'Bangalore Central', intensity: 'Heavy', timestamp: new Date(), active: true }
+      { id: 'e1', type: 'Storm', region: workerData.primary_zone || 'Bangalore', intensity: 'Heavy', timestamp: new Date(), active: true }
     ]);
+  };
+
+  const mockLogin = async (email: string) => {
+    setLoading(true);
+    try {
+      // 1. We'll try to signup this user implicitly so demo works easily
+      let response = await fetch(`${API_URL}/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: "password123", name: email.split('@')[0] })
+      });
+      
+      let data = await response.json();
+      
+      // If email exists, fallback to login
+      if (!response.ok && data.detail === "Email already registered") {
+         const formData = new URLSearchParams();
+         formData.append('username', email);
+         formData.append('password', "password123");
+         
+         response = await fetch(`${API_URL}/auth/login`, {
+           method: 'POST',
+           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+           body: formData
+         });
+         data = await response.json();
+      }
+      
+      if (!response.ok) throw new Error(data.detail || "Authentication Failed");
+      
+      const token = data.access_token;
+      localStorage.setItem('token', token);
+      
+      const meRes = await fetch(`${API_URL}/workers/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const meData = await meRes.json();
+      setupUserAndProfile(meData);
+      
+    } catch (e) {
+      console.error(e);
+      // Fallback to pure mock if backend is down
+      setupUserAndProfile({ id: 'mock-123', email, role: 'USER' });
+    }
+    setIsAuthReady(true);
     setLoading(false);
   };
 
   const logout = async () => {
-    await auth.signOut();
+    localStorage.removeItem('token');
     setUser(null);
     setProfile(null);
     setPayouts([]);
     setClaims([]);
-    setLoading(false);
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsAuthReady(true);
-      if (!user) {
-        setProfile(null);
-        setPayouts([]);
-        setClaims([]);
-        setLoading(false);
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!user || user.uid === 'mock-user-123') return;
-
-    // Listen to user profile
-    const profileRef = doc(db, 'users', user.uid);
-    const unsubscribeProfile = onSnapshot(profileRef, (doc) => {
-      if (doc.exists()) {
-        setProfile(doc.data() as UserProfile);
-      } else {
-        setProfile(null);
-      }
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching profile:", error);
-      setLoading(false);
-    });
-
-    // Listen to payouts
-    const payoutsQuery = query(
-      collection(db, 'payouts'),
-      where('uid', '==', user.uid),
-      orderBy('timestamp', 'desc'),
-      limit(10)
-    );
-    const unsubscribePayouts = onSnapshot(payoutsQuery, (snapshot) => {
-      const payoutsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Payout[];
-      setPayouts(payoutsData);
-    }, (error) => {
-      console.error("Error fetching payouts:", error);
-    });
-
-    // Listen to claims
-    const claimsQuery = query(
-      collection(db, 'claims'),
-      where('uid', '==', user.uid),
-      orderBy('date', 'desc'),
-      limit(10)
-    );
-    const unsubscribeClaims = onSnapshot(claimsQuery, (snapshot) => {
-      const claimsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Claim[];
-      setClaims(claimsData);
-    }, (error) => {
-      console.error("Error fetching claims:", error);
-    });
-
-    // Listen to system events
-    const eventsQuery = query(
-      collection(db, 'system_events'),
-      where('active', '==', true),
-      orderBy('timestamp', 'desc'),
-      limit(5)
-    );
-    const unsubscribeEvents = onSnapshot(eventsQuery, (snapshot) => {
-      const eventsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as SystemEvent[];
-      setSystemEvents(eventsData);
-    }, (error) => {
-      console.error("Error fetching system events:", error);
-    });
-
-    return () => {
-      unsubscribeProfile();
-      unsubscribePayouts();
-      unsubscribeClaims();
-      unsubscribeEvents();
-    };
-  }, [user]);
 
   const updateProfile = async (data: Partial<UserProfile>) => {
     if (!user) return;
-    if (user.uid === 'mock-user-123') {
-      setProfile(prev => prev ? { ...prev, ...data } : null);
-      return;
+    setProfile(prev => prev ? { ...prev, ...data } : null);
+    
+    // Sync to FastAPI Backend
+    const token = localStorage.getItem('token');
+    if (token) {
+        await fetch(`${API_URL}/workers/me`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: data.fullName,
+            city: data.city,
+            primary_zone: data.zone,
+            persona_type: data.workPersona
+          })
+        });
     }
-    const profileRef = doc(db, 'users', user.uid);
-    await setDoc(profileRef, {
-      ...data,
-      uid: user.uid,
-      createdAt: profile?.createdAt || serverTimestamp(),
-      connectedPlatforms: profile?.connectedPlatforms || [],
-    }, { merge: true });
   };
 
   const connectPlatform = async (platform: string) => {
-    if (!user || !profile) return;
-    if (user.uid === 'mock-user-123') {
-      const currentPlatforms = profile.connectedPlatforms || [];
-      if (!currentPlatforms.includes(platform)) {
-        setProfile({ ...profile, connectedPlatforms: [...currentPlatforms, platform] });
-      }
-      return;
-    }
-    const profileRef = doc(db, 'users', user.uid);
+    if (!profile) return;
     const currentPlatforms = profile.connectedPlatforms || [];
     if (!currentPlatforms.includes(platform)) {
-      await setDoc(profileRef, {
-        connectedPlatforms: [...currentPlatforms, platform]
-      }, { merge: true });
+      setProfile({ ...profile, connectedPlatforms: [...currentPlatforms, platform] });
+      
+      // Sync to backend API
+      const token = localStorage.getItem('token');
+      if (token) {
+        await fetch(`${API_URL}/workers/me/platforms`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            platform_type: platform.toUpperCase(),
+            avg_weekly_hours: 40,
+            avg_weekly_earnings: 2000
+          })
+        });
+      }
     }
   };
 
